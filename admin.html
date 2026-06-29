@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Lifestyle101</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0d0f;--surface:#16161a;--surface2:#1e1e24;--border:#2a2a32;
+  --accent:#ef4444;--accent-dim:rgba(239,68,68,0.12);
+  --text:#f0f0f0;--muted:#7a7a8c;--radius:14px;
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{
+  position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+  padding:14px 24px;background:rgba(13,13,15,0.94);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);z-index:100;
+}
+.logo{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--accent);}
+.admin-badge{font-size:11px;background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);padding:4px 10px;border-radius:99px;font-weight:600;}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:48px 40px;max-width:380px;width:100%;text-align:center;}
+.login-box h1{font-family:var(--font-display);font-size:24px;font-weight:800;margin-bottom:8px;}
+.login-box p{color:var(--muted);font-size:13px;margin-bottom:28px;}
+
+/* FORM ELEMENTS */
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+input[type=text],input[type=password],textarea,select{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;font-size:14px;color:var(--text);
+  font-family:var(--font-body);outline:none;transition:border-color 0.2s;
+}
+input[type=text]:focus,input[type=password]:focus,textarea:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:100px;}
+.field{margin-bottom:20px;}
+
+/* BUTTONS */
+.btn{
+  background:var(--accent);color:#fff;font-family:var(--font-display);font-size:14px;font-weight:800;
+  border:none;border-radius:99px;padding:14px 28px;cursor:pointer;transition:opacity 0.15s;
+}
+.btn:hover{opacity:0.88;}
+.btn-ghost{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-family:var(--font-body);font-size:13px;font-weight:600;
+  border-radius:99px;padding:8px 16px;cursor:pointer;transition:all 0.15s;
+}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm{padding:8px 16px;font-size:12px;}
+.btn-danger{background:#dc2626;}
+
+/* ADMIN LAYOUT */
+.admin{display:none;max-width:780px;margin:0 auto;padding:100px 24px 80px;}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:12px;}
+.admin-header h1{font-family:var(--font-display);font-size:24px;font-weight:800;}
+
+/* CLIENT LIST */
+.client-list{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.client-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  cursor:pointer;transition:border-color 0.2s;
+}
+.client-card:hover{border-color:var(--accent);}
+.client-card-info{flex:1;}
+.client-card-name{font-family:var(--font-display);font-size:15px;font-weight:800;}
+.client-card-code{font-size:12px;color:var(--accent);font-weight:600;margin-top:2px;}
+.client-card-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.client-card-actions{display:flex;gap:8px;flex-shrink:0;}
+
+/* EDITOR */
+.editor{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px;display:none;
+}
+.editor-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+.editor-title{font-family:var(--font-display);font-size:18px;font-weight:800;}
+
+/* DYNAMIC LIST BUILDER */
+.dyn-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.dyn-item{
+  display:flex;gap:8px;align-items:flex-start;
+  background:var(--surface2);border-radius:10px;padding:10px 12px;
+}
+.dyn-item-fields{flex:1;display:flex;flex-direction:column;gap:6px;}
+.dyn-item-fields input{background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:4px 0;font-size:13px;}
+.dyn-item-fields input:focus{border-bottom-color:var(--accent);}
+.dyn-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;flex-shrink:0;}
+.dyn-remove:hover{color:var(--accent);}
+.add-item-btn{
+  background:transparent;border:1px dashed var(--border);color:var(--muted);
+  border-radius:10px;padding:10px;font-size:13px;cursor:pointer;width:100%;
+  font-family:var(--font-body);transition:all 0.15s;
+}
+.add-item-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* SECTION DIVIDER */
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:24px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+/* STATUS */
+.status{font-size:13px;padding:12px 16px;border-radius:10px;margin-top:16px;display:none;}
+.status.ok{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;}
+.status.err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;}
+
+/* LINK COPY */
+.link-row{display:flex;gap:8px;align-items:center;margin-top:6px;}
+.link-preview{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--muted);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted);}
+.empty-state h2{font-family:var(--font-display);font-size:18px;color:var(--text);margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Lifestyle101</div>
+  <div class="admin-badge">Admin</div>
+</div>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div style="font-size:36px;margin-bottom:16px;">🔐</div>
+    <h1>Acceso Admin</h1>
+    <p>Ingresa la contraseña de administrador para continuar.</p>
+    <div class="field">
+      <input type="password" id="admin-pass-input" placeholder="Contraseña"
+        onkeydown="if(event.key==='Enter')adminLogin()"/>
+    </div>
+    <button class="btn" style="width:100%" onclick="adminLogin()">Entrar →</button>
+    <div class="status err" id="login-err" style="display:none">Contraseña incorrecta.</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin" id="admin-panel">
+  <div class="admin-header">
+    <h1>Clientes</h1>
+    <button class="btn" onclick="openEditor(null)">+ Nuevo cliente</button>
+  </div>
+
+  <div id="client-list-wrap"></div>
+
+  <!-- EDITOR -->
+  <div class="editor" id="editor">
+    <div class="editor-header">
+      <div class="editor-title" id="editor-title">Nuevo cliente</div>
+      <button class="btn-ghost" onclick="closeEditor()">✕ Cerrar</button>
+    </div>
+
+    <input type="hidden" id="edit-created-at"/>
+
+    <div class="section-label">Información básica</div>
+    <div class="field">
+      <label>Nombre del cliente</label>
+      <input type="text" id="edit-name" placeholder="Ej. María González"/>
+    </div>
+    <div class="field">
+      <label>Código único (el cliente lo usará para acceder)</label>
+      <input type="text" id="edit-code" placeholder="Ej. MARIA2024" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9-]/g,'')"/>
+    </div>
+    <div class="field">
+      <label>Objetivo principal</label>
+      <input type="text" id="edit-goal" placeholder="Ej. Perder 10kg en 3 meses"/>
+    </div>
+
+    <div class="section-label">Lista de compras ✅</div>
+    <div class="dyn-list" id="buy-items"></div>
+    <button class="add-item-btn" onclick="addItem('buy-items','buy')">+ Agregar producto</button>
+
+    <div class="section-label">Deja de comprar 🚫</div>
+    <div class="dyn-list" id="stop-items"></div>
+    <button class="add-item-btn" onclick="addItem('stop-items','stop')">+ Agregar producto</button>
+
+    <div class="section-label">Recomendaciones del coach ⭐</div>
+    <div class="dyn-list" id="rec-items"></div>
+    <button class="add-item-btn" onclick="addItem('rec-items','rec')">+ Agregar recomendación</button>
+
+    <div class="section-label">Notas personales 📋</div>
+    <div class="field">
+      <textarea id="edit-notes" placeholder="Escribe aquí tus notas y observaciones para este cliente..."></textarea>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn" onclick="saveClient()">💾 Guardar cliente</button>
+      <button class="btn btn-danger" id="delete-btn" onclick="deleteClient()" style="display:none">🗑 Eliminar</button>
+    </div>
+
+    <div class="status" id="save-status"></div>
+
+    <div id="link-section" style="display:none;margin-top:20px;">
+      <div class="section-label" style="margin-top:0">Enlace del cliente</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Comparte este enlace con tu cliente:</p>
+      <div class="link-row">
+        <div class="link-preview" id="link-preview"></div>
+        <button class="btn-ghost btn-sm" onclick="copyLink()">Copiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── ADMIN AUTH ──
+const ADMIN_KEY = 'ls101_admin_pass';
+let adminPass = '';
+
+function adminLogin() {
+  const pass = document.getElementById('admin-pass-input').value;
+  // Quick client-side check — real auth is enforced server-side
+  if (!pass) return;
+  adminPass = pass;
+  sessionStorage.setItem(ADMIN_KEY, pass);
+  showAdmin();
+}
+
+function showAdmin() {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+  renderClientList();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = sessionStorage.getItem(ADMIN_KEY);
+  if (saved) { adminPass = saved; showAdmin(); }
+  document.getElementById('login-err').style.display = 'none';
+});
+
+// ── CLIENT STORAGE (localStorage for admin) ──
+const CLIENTS_KEY = 'ls101_clients';
+
+function getClients() {
+  try { return JSON.parse(localStorage.getItem(CLIENTS_KEY)) || {}; } catch { return {}; }
+}
+function saveClients(clients) {
+  localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
+}
+
+// ── CLIENT LIST ──
+function renderClientList() {
+  const clients = getClients();
+  const wrap = document.getElementById('client-list-wrap');
+  const codes = Object.keys(clients);
+
+  if (!codes.length) {
+    wrap.innerHTML = `<div class="empty-state"><h2>Aún no tienes clientes</h2><p>Crea tu primer cliente con el botón de arriba.</p></div>`;
+    return;
+  }
+
+  wrap.innerHTML = `<div class="client-list">${codes.map(code => {
+    const c = clients[code];
+    const date = c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('es', {day:'numeric',month:'short',year:'numeric'}) : '';
+    return `
+      <div class="client-card" onclick="openEditor('${code}')">
+        <div class="client-card-info">
+          <div class="client-card-name">${c.name || '(sin nombre)'}</div>
+          <div class="client-card-code">Código: ${code}</div>
+          ${date ? `<div class="client-card-meta">Actualizado: ${date}</div>` : ''}
+        </div>
+        <div class="client-card-actions" onclick="event.stopPropagation()">
+          <button class="btn-ghost btn-sm" onclick="copyClientLink('${code}')">Copiar enlace</button>
+          <button class="btn btn-sm" onclick="openEditor('${code}')">Editar</button>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+// ── EDITOR ──
+let editingCode = null;
+
+const itemDefs = {
+  buy:  { label: 'Producto', why: 'Por qué comprarlo (opcional)' },
+  stop: { label: 'Producto', why: 'Por qué eliminarlo (opcional)' },
+  rec:  { label: 'Nombre / producto', why: 'Por qué lo recomiendo (opcional)' },
+};
+
+function addItem(listId, type, data = {}) {
+  const list = document.getElementById(listId);
+  const def = itemDefs[type];
+  const div = document.createElement('div');
+  div.className = 'dyn-item';
+  div.dataset.type = type;
+  div.innerHTML = `
+    <div class="dyn-item-fields">
+      <input type="text" placeholder="${def.label}" value="${data.name || ''}" data-field="name"/>
+      <input type="text" placeholder="${def.why}" value="${data.why || ''}" data-field="why"/>
+    </div>
+    <button class="dyn-remove" onclick="this.parentElement.remove()" title="Eliminar">✕</button>`;
+  list.appendChild(div);
+}
+
+function getItems(listId) {
+  return Array.from(document.querySelectorAll(`#${listId} .dyn-item`)).map(div => ({
+    name: div.querySelector('[data-field="name"]').value.trim(),
+    why:  div.querySelector('[data-field="why"]').value.trim(),
+  })).filter(i => i.name);
+}
+
+function openEditor(code) {
+  editingCode = code;
+  const editor = document.getElementById('editor');
+  editor.style.display = 'block';
+  editor.scrollIntoView({behavior:'smooth', block:'start'});
+
+  // Clear
+  document.getElementById('edit-name').value = '';
+  document.getElementById('edit-code').value = '';
+  document.getElementById('edit-goal').value = '';
+  document.getElementById('edit-notes').value = '';
+  document.getElementById('edit-created-at').value = '';
+  document.getElementById('buy-items').innerHTML = '';
+  document.getElementById('stop-items').innerHTML = '';
+  document.getElementById('rec-items').innerHTML = '';
+  document.getElementById('save-status').style.display = 'none';
+  document.getElementById('link-section').style.display = 'none';
+  document.getElementById('delete-btn').style.display = code ? 'block' : 'none';
+
+  if (code) {
+    document.getElementById('editor-title').textContent = 'Editar cliente';
+    const c = getClients()[code];
+    if (c) {
+      document.getElementById('edit-name').value = c.name || '';
+      document.getElementById('edit-code').value = code;
+      document.getElementById('edit-goal').value = c.goal || '';
+      document.getElementById('edit-notes').value = c.notes || '';
+      document.getElementById('edit-created-at').value = c.createdAt || '';
+      (c.buyList || []).forEach(i => addItem('buy-items','buy', typeof i==='string'?{name:i}:i));
+      (c.stopList || []).forEach(i => addItem('stop-items','stop', typeof i==='string'?{name:i}:i));
+      (c.recommendations || []).forEach(i => addItem('rec-items','rec', typeof i==='string'?{name:i}:i));
+      showLink(code);
+    }
+  } else {
+    document.getElementById('editor-title').textContent = 'Nuevo cliente';
+  }
+}
+
+function closeEditor() {
+  document.getElementById('editor').style.display = 'none';
+  editingCode = null;
+}
+
+function saveClient() {
+  const name = document.getElementById('edit-name').value.trim();
+  const code = document.getElementById('edit-code').value.trim().toUpperCase();
+  const goal = document.getElementById('edit-goal').value.trim();
+  const notes = document.getElementById('edit-notes').value.trim();
+  const createdAt = document.getElementById('edit-created-at').value || new Date().toISOString();
+
+  const statusEl = document.getElementById('save-status');
+
+  if (!name || !code) {
+    statusEl.className = 'status err';
+    statusEl.textContent = 'El nombre y el código son obligatorios.';
+    statusEl.style.display = 'block';
+    return;
+  }
+
+  const clientData = {
+    name, goal, notes, createdAt,
+    updatedAt: new Date().toISOString(),
+    buyList: getItems('buy-items'),
+    stopList: getItems('stop-items'),
+    recommendations: getItems('rec-items'),
+  };
+
+  // Save to localStorage (admin side)
+  const clients = getClients();
+  // If code changed, remove old entry
+  if (editingCode && editingCode !== code) delete clients[editingCode];
+  clients[code] = clientData;
+  saveClients(clients);
+  editingCode = code;
+
+  // Generate downloadable JSON file for the client
+  const json = JSON.stringify({ code, ...clientData }, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${code}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  statusEl.className = 'status ok';
+  statusEl.innerHTML = `✅ Cliente guardado. <strong>Se descargó el archivo <code>${code}.json</code></strong> — súbelo a la carpeta <code>clients/</code> de tu proyecto y despliega en Netlify para que el cliente pueda acceder.`;
+  statusEl.style.display = 'block';
+
+  document.getElementById('delete-btn').style.display = 'block';
+  showLink(code);
+  renderClientList();
+}
+
+function deleteClient() {
+  if (!editingCode) return;
+  if (!confirm(`¿Eliminar cliente ${editingCode}? Esto no elimina el archivo del servidor.`)) return;
+  const clients = getClients();
+  delete clients[editingCode];
+  saveClients(clients);
+  closeEditor();
+  renderClientList();
+}
+
+function showLink(code) {
+  const base = window.location.origin;
+  const link = `${base}/plan?code=${code}`;
+  document.getElementById('link-preview').textContent = link;
+  document.getElementById('link-section').style.display = 'block';
+}
+
+function copyLink() {
+  const text = document.getElementById('link-preview').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar', 1800);
+  });
+}
+
+function copyClientLink(code) {
+  const link = `${window.location.origin}/plan?code=${code}`;
+  navigator.clipboard.writeText(link).then(() => {
+    alert(`Enlace copiado:\n${link}`);
+  });
+}
+</script>
+</body>
+</html>

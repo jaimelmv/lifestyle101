@@ -1,0 +1,25 @@
+{
+  "code": "DEMO2024",
+  "name": "Cliente Demo",
+  "goal": "Bajar 10kg y mejorar energía",
+  "createdAt": "2024-06-29T00:00:00.000Z",
+  "updatedAt": "2024-06-29T00:00:00.000Z",
+  "buyList": [
+    { "name": "Avena sin azúcar", "why": "Base de un desayuno balanceado y llena de fibra" },
+    { "name": "Pollo y pavo (proteína magra)", "why": "Fundamental para mantener y construir músculo" },
+    { "name": "Vegetales verdes (brócoli, espinaca, zucchini)", "why": "Micronutrientes esenciales, bajos en calorías" },
+    { "name": "Huevos", "why": "Proteína completa y grasas saludables" },
+    { "name": "Arroz integral o yuca", "why": "Carbohidrato complejo para energía sostenida" }
+  ],
+  "stopList": [
+    { "name": "Refrescos y jugos de caja", "why": "Azúcar líquida que dispara la insulina sin saciarte" },
+    { "name": "Pan blanco y harina refinada", "why": "Carbohidrato vacío que almacena grasa rápidamente" },
+    { "name": "Snacks de paquete (papitas, galletas)", "why": "Altos en sodio, grasas trans y calorías vacías" }
+  ],
+  "recommendations": [
+    { "name": "Proteína en polvo Whey (Optimum Nutrition Gold Standard)", "why": "Para completar proteína diaria de forma fácil y económica" },
+    { "name": "Omega-3 (cápsulas de aceite de pescado)", "why": "Reduce inflamación y mejora composición corporal" },
+    { "name": "App MyFitnessPal (gratis)", "why": "Para contar calorías y macros fácilmente al inicio" }
+  ],
+  "notes": "Hola, aquí van mis notas personales para ti.\n\nTu mayor reto es la consistencia en la alimentación. Te recomiendo preparar tus comidas los domingos para la semana.\n\nEmpieza con 3 días de ejercicio por semana — no intentes hacerlo todo de golpe.\n\nAntes de dormir, toma 1 vaso de agua. Pequeños hábitos hacen grandes diferencias.\n\n¡Tú puedes! Cualquier pregunta me escribes. 💪"
+}
