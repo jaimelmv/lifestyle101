@@ -1221,13 +1221,19 @@ function clearSaved() {
 
 // attach auto-save listeners once DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  // show resume banner if saved data exists
+  // auto-restore on page load if saved data exists
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (raw) {
       const data = JSON.parse(raw);
-      if (data.step && data.step > 1) {
-        document.getElementById('resume-banner').style.display = 'flex';
+      if (data.step && data.step >= 1) {
+        // restore answers and jump straight to saved step
+        restoreAnswers(data);
+        document.getElementById('hero').style.display = 'none';
+        document.getElementById('steps-wrap').style.display = 'block';
+        document.getElementById('step-counter').style.display = 'inline';
+        document.getElementById('progress-widget').style.display = 'flex';
+        showStep(data.step);
       }
     }
   } catch(e) {}
