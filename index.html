@@ -1008,19 +1008,17 @@ Notas extra:           ${n('q-extra')}
 // ── SUBMIT ──
 async function submitForm() {
   const btn = document.getElementById('submit-btn');
+  const errEl = document.getElementById('err-submit');
   btn.textContent = lang === 'es' ? 'Enviando…' : 'Sending…';
   btn.disabled = true;
+  errEl.style.display = 'none';
 
   try {
-    const res = await fetch('https://formspree.io/f/mlgyleea', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-      body: JSON.stringify({
-        nombre: v('q-name') || '—',
-        telefono: v('q-phone') || '—',
-        email: v('q-email') || '—',
-        resumen_completo: buildSummary()
-      })
+    const res = await window._formspreeSubmit('mlgyleea', {
+      nombre: v('q-name') || '—',
+      telefono: v('q-phone') || '—',
+      email: v('q-email') || '—',
+      resumen_completo: buildSummary()
     });
 
     if (res.ok) {
@@ -1028,19 +1026,44 @@ async function submitForm() {
       document.getElementById('steps-wrap').style.display = 'none';
       document.getElementById('thankyou').style.display = 'block';
       document.getElementById('prog').style.width = '100%';
-      document.getElementById('prog-pct').textContent = '100%';
+      document.getElementById('widget-pct').textContent = '100%';
+      document.getElementById('widget-fill').style.width = '100%';
       applyLang();
       window.scrollTo({top: 0, behavior: 'smooth'});
     } else {
-      throw new Error('Failed');
+      const body = await res.json().catch(() => ({}));
+      const msg = body?.errors?.[0]?.message || (lang === 'es' ? 'Algo salió mal. Intenta de nuevo.' : 'Something went wrong. Please try again.');
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+      btn.textContent = lang === 'es' ? 'Enviar así ✓' : 'Submit as is ✓';
+      btn.disabled = false;
     }
   } catch(e) {
-    const err = document.getElementById('err-submit');
-    err.style.display = 'block';
+    errEl.textContent = lang === 'es' ? 'Error de red. Verifica tu conexión.' : 'Network error. Check your connection.';
+    errEl.style.display = 'block';
     btn.textContent = lang === 'es' ? 'Enviar así ✓' : 'Submit as is ✓';
     btn.disabled = false;
   }
 }
 </script>
+
+<!-- Formspree Ajax SDK -->
+<script>
+  // Thin wrapper: uses @formspree/ajax when loaded, falls back to plain fetch
+  window._formspreeSubmit = async function(formId, data) {
+    if (window.formspreeAjax && window.formspreeAjax.submitForm) {
+      return window.formspreeAjax.submitForm(formId, data);
+    }
+    return fetch('https://formspree.io/f/' + formId, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify(data)
+    });
+  };
+</script>
+<script src="https://unpkg.com/@formspree/ajax@1.1.5/dist/global.js"
+  integrity="sha384-9fQrvHz7unHjhv7e+pJqhvNxPV4tYHHsSn3PxBIEyPTGY8Q/PAKM1sfhL+zTYmhc"
+  crossorigin="anonymous" defer
+  onload="window.formspreeAjax = formspree"></script>
 </body>
 </html>
