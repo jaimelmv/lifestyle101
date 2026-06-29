@@ -16,6 +16,7 @@
   --accent-dim:rgba(239,68,68,0.12);
   --text:#f0f0f0;
   --muted:#7a7a8c;
+  --wa:#25D366;
   --radius:14px;
   --font-display:'Syne',sans-serif;
   --font-body:'DM Sans',sans-serif;
@@ -35,6 +36,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 }
 .logo{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--accent);cursor:pointer;text-decoration:none;}
 .logo:hover{opacity:0.75;}
+
+/* LOADING OVERLAY */
+.loading-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:var(--bg);
+  flex-direction:column;align-items:center;justify-content:center;gap:18px;
+}
+.loading-overlay.show{display:flex;}
+.spinner{
+  width:46px;height:46px;border-radius:50%;
+  border:3px solid var(--border);border-top-color:var(--accent);
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{color:var(--muted);font-size:13px;}
 
 /* CODE ENTRY */
 .code-wrap{
@@ -66,8 +82,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 .code-error{color:var(--accent);font-size:13px;margin-top:12px;display:none;}
 
 /* PROFILE PAGE */
-.profile{display:none;max-width:680px;margin:0 auto;padding:100px 24px 80px;}
-.profile-header{text-align:center;margin-bottom:48px;}
+.profile{display:none;max-width:680px;margin:0 auto;padding:100px 24px 80px;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.profile-header{text-align:center;margin-bottom:24px;}
 .profile-avatar{
   width:72px;height:72px;border-radius:50%;background:var(--accent-dim);
   border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;
@@ -81,11 +98,49 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
   color:var(--accent);font-size:12px;font-weight:600;
   padding:6px 16px;border-radius:99px;
 }
+.profile-updated{font-size:11px;color:var(--muted);margin-top:10px;display:none;}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+.stat-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border);border-radius:99px;
+  padding:7px 14px;font-size:12px;color:var(--muted);white-space:nowrap;
+}
+.stat-pill strong{color:var(--text);font-weight:700;}
+
+/* STICKY SECTION NAV */
+.section-nav{
+  display:none;position:sticky;top:53px;z-index:90;
+  background:var(--bg);border-bottom:1px solid var(--border);
+  margin:0 -24px 24px;
+}
+.section-nav-inner{display:flex;max-width:680px;margin:0 auto;}
+.nav-tab{
+  flex:1;min-width:0;text-align:center;padding:13px 4px;
+  font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--muted);
+  background:none;border:none;border-bottom:2px solid transparent;
+  cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:color 0.15s,border-color 0.15s;
+}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* COPY BUTTON */
+.copy-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  font-family:var(--font-body);font-size:13px;font-weight:600;
+  border-radius:99px;padding:10px 18px;cursor:pointer;margin-bottom:14px;
+  transition:border-color 0.15s,color 0.15s;
+}
+.copy-btn:hover{border-color:var(--accent);}
+.copy-btn.copied{border-color:var(--wa);color:var(--wa);}
 
 /* SECTIONS */
 .section{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius);padding:28px;margin-bottom:20px;
+  scroll-margin-top:108px;
 }
 .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
 .section-icon{font-size:22px;}
@@ -97,11 +152,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 .item{
   display:flex;align-items:flex-start;gap:12px;
   background:var(--surface2);border-radius:10px;padding:14px 16px;
+  cursor:pointer;user-select:none;
+  transition:opacity 0.15s,background 0.15s;
 }
+.item:hover{background:#23232b;}
 .item-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
 .item-text{font-size:14px;line-height:1.5;}
 .item-text strong{display:block;font-weight:600;margin-bottom:2px;}
 .item-text span{color:var(--muted);font-size:13px;}
+.check-badge{
+  margin-left:auto;flex-shrink:0;align-self:center;
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:transparent;
+  transition:background 0.15s,border-color 0.15s,color 0.15s;
+}
+.item.checked{opacity:0.5;}
+.item.checked .item-text strong{text-decoration:line-through;}
+.item.checked .check-badge{background:var(--accent);border-color:var(--accent);color:#fff;}
 
 /* NOTES */
 .notes-body{
@@ -112,15 +181,60 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 /* EMPTY STATE */
 .empty{color:var(--muted);font-size:13px;font-style:italic;}
 
+/* CONTACT CTA */
+.contact-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--wa);color:#08301c;
+  font-family:var(--font-display);font-size:16px;font-weight:800;
+  border:none;border-radius:99px;padding:18px;cursor:pointer;
+  text-decoration:none;margin-top:40px;
+  box-shadow:0 6px 24px rgba(37,211,102,0.3);
+  transition:opacity 0.15s,transform 0.1s;
+}
+.contact-btn:hover{opacity:0.9;}
+.contact-btn:active{transform:scale(0.98);}
+
 /* FOOTER */
-.profile-footer{text-align:center;margin-top:48px;color:var(--muted);font-size:12px;}
-.profile-footer a{color:var(--accent);text-decoration:none;}
+.profile-footer{text-align:center;margin-top:40px;}
+.pdf-btn{
+  background:none;border:1px solid var(--border);color:var(--muted);
+  font-family:var(--font-body);font-size:12px;font-weight:600;
+  border-radius:99px;padding:9px 18px;cursor:pointer;margin-bottom:20px;
+  transition:border-color 0.15s,color 0.15s;
+}
+.pdf-btn:hover{border-color:var(--muted);color:var(--text);}
+.footer-text{color:var(--muted);font-size:12px;}
+.footer-text a{color:var(--accent);text-decoration:none;}
+
+/* PRINT */
+@media print{
+  .topbar,.section-nav,.copy-btn,.contact-btn,.pdf-btn,
+  .check-badge,.loading-overlay,.code-wrap{display:none !important;}
+  body{background:#fff !important;color:#000 !important;}
+  .profile{display:block !important;padding:24px 0;max-width:100%;animation:none;}
+  .section,.item,.stat-pill{
+    background:#fff !important;border:1px solid #ccc !important;box-shadow:none !important;
+  }
+  .item{cursor:default;opacity:1 !important;}
+  .item.checked .item-text strong{text-decoration:none !important;}
+  .profile-name,.section-title,.item-text strong,.notes-body,.stat-pill strong,.footer-text{color:#000 !important;}
+  .profile-subtitle,.section-desc,.item-text span,.profile-updated,.stat-pill{color:#333 !important;}
+  .profile-goal{color:#000 !important;border-color:#888 !important;background:#f0f0f0 !important;}
+  .footer-text a{color:#000 !important;}
+  .section{break-inside:avoid;}
+}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <a class="logo" href="/">Lifestyle101</a>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Cargando tu plan…</div>
 </div>
 
 <!-- CODE ENTRY SCREEN -->
@@ -145,10 +259,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
     <div class="profile-name" id="profile-name">—</div>
     <div class="profile-subtitle">Tu plan personalizado · Lifestyle101</div>
     <div class="profile-goal" id="profile-goal" style="display:none"></div>
+    <div class="profile-updated" id="profile-updated"></div>
   </div>
 
+  <!-- STATS BAR -->
+  <div class="stats-bar" id="stats-bar">
+    <span class="stat-pill">🛒 <strong id="stat-buy">0</strong> para comprar</span>
+    <span class="stat-pill">🚫 <strong id="stat-stop">0</strong> para dejar</span>
+    <span class="stat-pill">⭐ <strong id="stat-rec">0</strong> recom.</span>
+  </div>
+
+  <!-- STICKY SECTION NAV -->
+  <nav class="section-nav" id="section-nav">
+    <div class="section-nav-inner">
+      <button class="nav-tab" data-target="sec-buy">🛒 Comprar</button>
+      <button class="nav-tab" data-target="sec-stop">🚫 Dejar</button>
+      <button class="nav-tab" data-target="sec-rec">⭐ Recom.</button>
+      <button class="nav-tab" data-target="notes-section">📝 Notas</button>
+    </div>
+  </nav>
+
+  <!-- COPY BUY LIST -->
+  <button class="copy-btn" id="copy-buy-btn">📋 Copiar lista de compras</button>
+
   <!-- BUY LIST -->
-  <div class="section">
+  <div class="section" id="sec-buy">
     <div class="section-header">
       <div class="section-icon">✅</div>
       <div>
@@ -160,7 +295,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
   </div>
 
   <!-- STOP LIST -->
-  <div class="section">
+  <div class="section" id="sec-stop">
     <div class="section-header">
       <div class="section-icon">🚫</div>
       <div>
@@ -172,7 +307,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
   </div>
 
   <!-- RECOMMENDATIONS -->
-  <div class="section">
+  <div class="section" id="sec-rec">
     <div class="section-header">
       <div class="section-icon">⭐</div>
       <div>
@@ -195,17 +330,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
     <div class="notes-body" id="notes-body"></div>
   </div>
 
+  <!-- CONTACT CTA -->
+  <a class="contact-btn" href="https://wa.me/18508128342" target="_blank" rel="noopener">💬 Contáctame</a>
+
   <div class="profile-footer">
-    Plan creado por <a href="/">Lifestyle101</a> · Confidencial
+    <button class="pdf-btn" id="pdf-btn">🖨️ Guardar PDF</button>
+    <div class="footer-text">Plan creado por <a href="/">Lifestyle101</a> · Confidencial</div>
   </div>
 </div>
 
 <script>
+let planData = null;
+let planCode = '';
+let navObserver = null;
+
 function loadPlan() {
   const code = document.getElementById('code-input').value.trim().toUpperCase();
   const errEl = document.getElementById('code-error');
   if (!code) { errEl.style.display = 'block'; errEl.textContent = 'Por favor ingresa tu código.'; return; }
   errEl.style.display = 'none';
+  document.getElementById('loading-overlay').classList.add('show');
 
   fetch(`/clients/${code}.json`)
     .then(r => {
@@ -214,15 +358,20 @@ function loadPlan() {
     })
     .then(data => renderProfile(data))
     .catch(() => {
+      document.getElementById('loading-overlay').classList.remove('show');
       errEl.style.display = 'block';
       errEl.textContent = 'Código no encontrado. Verifica e intenta de nuevo.';
     });
 }
 
 function renderProfile(data) {
+  document.getElementById('loading-overlay').classList.remove('show');
   document.getElementById('code-wrap').style.display = 'none';
   const profile = document.getElementById('profile');
   profile.style.display = 'block';
+
+  planData = data;
+  planCode = data.code || document.getElementById('code-input').value.trim().toUpperCase();
 
   document.getElementById('profile-name').textContent = data.name || 'Tu Plan';
 
@@ -232,14 +381,30 @@ function renderProfile(data) {
     g.style.display = 'inline-block';
   }
 
-  renderList('buy-list', data.buyList || [], '✅');
-  renderList('stop-list', data.stopList || [], '❌');
-  renderList('rec-list', data.recommendations || [], '⭐');
+  // Updated date badge
+  const dateEl = document.getElementById('profile-updated');
+  const formatted = data.updatedAt ? formatDate(data.updatedAt) : '';
+  if (formatted) { dateEl.textContent = 'Actualizado el ' + formatted; dateEl.style.display = 'block'; }
 
-  if (data.notes) {
+  const buy = data.buyList || [], stop = data.stopList || [], rec = data.recommendations || [];
+
+  renderList('buy-list', buy, '✅');
+  renderList('stop-list', stop, '❌');
+  renderList('rec-list', rec, '⭐');
+
+  // Stats
+  document.getElementById('stat-buy').textContent = buy.length;
+  document.getElementById('stat-stop').textContent = stop.length;
+  document.getElementById('stat-rec').textContent = rec.length;
+
+  const hasNotes = !!data.notes;
+  if (hasNotes) {
     document.getElementById('notes-section').style.display = 'block';
     document.getElementById('notes-body').textContent = data.notes;
   }
+
+  setupChecklist();
+  setupNav(hasNotes);
 
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
@@ -271,8 +436,125 @@ function renderList(id, items, defaultIcon) {
   }).join('');
 }
 
-// Check URL param on load
+/* ── DATE FORMATTING (Spanish, UTC to avoid off-by-one) ── */
+function formatDate(iso) {
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  } catch (e) { return ''; }
+}
+
+/* ── CHECKLIST (per-client persisted) ── */
+function checklistKey() { return 'checklist_' + planCode; }
+function getChecked() {
+  try { return new Set(JSON.parse(localStorage.getItem(checklistKey()) || '[]')); }
+  catch (e) { return new Set(); }
+}
+function saveChecked(set) {
+  try { localStorage.setItem(checklistKey(), JSON.stringify([...set])); } catch (e) {}
+}
+function setupChecklist() {
+  const checked = getChecked();
+  ['buy-list', 'stop-list', 'rec-list'].forEach(listId => {
+    const container = document.getElementById(listId);
+    if (!container) return;
+    container.querySelectorAll('.item').forEach(item => {
+      const strong = item.querySelector('.item-text strong');
+      const textEl = item.querySelector('.item-text');
+      const name = (strong ? strong.textContent : (textEl ? textEl.textContent : '')).trim();
+      const key = listId + '::' + name;
+      item.dataset.key = key;
+      if (!item.querySelector('.check-badge')) {
+        const badge = document.createElement('div');
+        badge.className = 'check-badge';
+        badge.textContent = '✓';
+        item.appendChild(badge);
+      }
+      if (checked.has(key)) item.classList.add('checked');
+    });
+    if (!container.dataset.checkBound) {
+      container.addEventListener('click', e => {
+        const item = e.target.closest('.item');
+        if (!item || !container.contains(item)) return;
+        const set = getChecked();
+        if (item.classList.toggle('checked')) set.add(item.dataset.key);
+        else set.delete(item.dataset.key);
+        saveChecked(set);
+      });
+      container.dataset.checkBound = '1';
+    }
+  });
+}
+
+/* ── COPY BUY LIST ── */
+function copyBuyList() {
+  if (!planData || !planData.buyList) return;
+  const text = planData.buyList
+    .map(it => typeof it === 'string' ? it : (it.name || ''))
+    .filter(Boolean)
+    .join('\n');
+  const btn = document.getElementById('copy-buy-btn');
+  if (!btn.dataset.orig) btn.dataset.orig = btn.textContent;
+  const done = () => {
+    btn.classList.add('copied');
+    btn.textContent = '✅ ¡Copiado!';
+    setTimeout(() => { btn.textContent = btn.dataset.orig; btn.classList.remove('copied'); }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  if (cb) cb();
+}
+
+/* ── STICKY NAV + ACTIVE TAB ── */
+function setupNav(hasNotes) {
+  const nav = document.getElementById('section-nav');
+  nav.style.display = 'block';
+
+  const notesTab = nav.querySelector('[data-target="notes-section"]');
+  if (notesTab) notesTab.style.display = hasNotes ? '' : 'none';
+
+  const tabs = [...nav.querySelectorAll('.nav-tab')];
+  tabs.forEach(tab => {
+    if (tab.dataset.bound) return;
+    tab.addEventListener('click', () => {
+      const target = document.getElementById(tab.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    tab.dataset.bound = '1';
+  });
+
+  if (navObserver) navObserver.disconnect();
+  const sections = tabs
+    .filter(t => t.style.display !== 'none')
+    .map(t => document.getElementById(t.dataset.target))
+    .filter(Boolean);
+  navObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.target === id));
+      }
+    });
+  }, { rootMargin: '-120px 0px -65% 0px', threshold: 0 });
+  sections.forEach(s => navObserver.observe(s));
+}
+
+// On load: wire buttons + check URL param
 window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('copy-buy-btn').addEventListener('click', copyBuyList);
+  document.getElementById('pdf-btn').addEventListener('click', () => window.print());
+
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
   if (code) {
