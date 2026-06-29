@@ -260,22 +260,62 @@ function renderClientList() {
     return;
   }
 
-  wrap.innerHTML = `<div class="client-list">${codes.map(code => {
+  const listDiv = document.createElement('div');
+  listDiv.className = 'client-list';
+
+  codes.forEach(code => {
     const c = clients[code];
     const date = c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('es', {day:'numeric',month:'short',year:'numeric'}) : '';
-    return `
-      <div class="client-card" onclick="openEditor('${esc(code)}')">
-        <div class="client-card-info">
-          <div class="client-card-name">${esc(c.name) || '(sin nombre)'}</div>
-          <div class="client-card-code">Código: ${esc(code)}</div>
-          ${date ? `<div class="client-card-meta">Actualizado: ${date}</div>` : ''}
-        </div>
-        <div class="client-card-actions" onclick="event.stopPropagation()">
-          <button class="btn-ghost btn-sm" onclick="copyClientLink('${esc(code)}')">Copiar enlace</button>
-          <button class="btn btn-sm" onclick="openEditor('${esc(code)}')">Editar</button>
-        </div>
-      </div>`;
-  }).join('')}</div>`;
+
+    const card = document.createElement('div');
+    card.className = 'client-card';
+    card.dataset.code = code;
+
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'client-card-info';
+
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'client-card-name';
+    nameDiv.textContent = c.name || '(sin nombre)';
+
+    const codeDiv = document.createElement('div');
+    codeDiv.className = 'client-card-code';
+    codeDiv.textContent = 'Código: ' + code;
+
+    infoDiv.appendChild(nameDiv);
+    infoDiv.appendChild(codeDiv);
+
+    if (date) {
+      const metaDiv = document.createElement('div');
+      metaDiv.className = 'client-card-meta';
+      metaDiv.textContent = 'Actualizado: ' + date;
+      infoDiv.appendChild(metaDiv);
+    }
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'client-card-actions';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn-ghost btn-sm';
+    copyBtn.textContent = 'Copiar enlace';
+    copyBtn.addEventListener('click', e => { e.stopPropagation(); copyClientLink(code); });
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn btn-sm';
+    editBtn.textContent = 'Editar';
+    editBtn.addEventListener('click', e => { e.stopPropagation(); openEditor(code); });
+
+    actionsDiv.appendChild(copyBtn);
+    actionsDiv.appendChild(editBtn);
+
+    card.appendChild(infoDiv);
+    card.appendChild(actionsDiv);
+    card.addEventListener('click', () => openEditor(code));
+
+    listDiv.appendChild(card);
+  });
+
+  wrap.appendChild(listDiv);
 }
 
 // ── EDITOR ──
