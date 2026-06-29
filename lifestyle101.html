@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lifestyle101 — Tu Plan Personal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#0d0d0f;
+  --surface:#16161a;
+  --surface2:#1e1e24;
+  --border:#2a2a32;
+  --accent:#c8f542;
+  --accent-dim:rgba(200,245,66,0.12);
+  --text:#f0f0f0;
+  --muted:#7a7a8c;
+  --danger:#ff5f57;
+  --warning:#f59e0b;
+  --radius:14px;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+}
+
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;min-height:100vh;}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 24px;
+  background:rgba(13,13,15,0.94);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  z-index:100;
+}
+.logo{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--accent);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.step-counter{font-size:12px;color:var(--muted);font-weight:500;}
+.lang-toggle{
+  background:var(--surface2);border:1px solid var(--border);border-radius:99px;
+  padding:6px 14px;font-size:12px;font-weight:600;color:var(--muted);
+  cursor:pointer;font-family:var(--font-body);transition:all 0.2s;
+}
+.lang-toggle:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── PROGRESS BAR ── */
+.progress-bar{
+  position:fixed;top:53px;left:0;right:0;
+  height:3px;background:var(--border);z-index:99;
+}
+.progress-fill{
+  height:100%;background:var(--accent);
+  transition:width 0.45s cubic-bezier(.4,0,.2,1);width:0%;
+}
+.progress-pct{
+  position:fixed;top:58px;right:24px;
+  font-size:10px;color:var(--muted);z-index:99;
+  font-weight:600;letter-spacing:0.08em;
+}
+
+/* ── HERO ── */
+.hero{padding:120px 24px 60px;max-width:640px;margin:0 auto;text-align:center;}
+.hero-eyebrow{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:16px;}
+.hero h1{font-family:var(--font-display);font-size:clamp(36px,7vw,58px);font-weight:800;line-height:1.05;margin-bottom:16px;}
+.hero h1 span{color:var(--accent);}
+.hero p{color:var(--muted);font-size:15px;max-width:480px;margin:0 auto 36px;}
+.start-btn{
+  background:var(--accent);color:#0d0d0f;
+  font-family:var(--font-display);font-size:15px;font-weight:800;
+  border:none;border-radius:99px;padding:16px 44px;cursor:pointer;
+  transition:opacity 0.15s,transform 0.1s;
+}
+.start-btn:hover{opacity:0.88;}
+.start-btn:active{transform:scale(0.98);}
+
+/* ── STEPS ── */
+.steps-wrap{display:none;max-width:620px;margin:0 auto;padding:100px 24px 80px;min-height:100vh;}
+.step{display:none;}
+.step.active{display:block;animation:fadeUp 0.32s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.step-meta{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.step-question{font-family:var(--font-display);font-size:clamp(22px,4vw,30px);font-weight:800;line-height:1.15;margin-bottom:8px;}
+.step-hint{font-size:13px;color:var(--muted);margin-bottom:28px;}
+
+/* ── INPUTS ── */
+input[type="text"],input[type="number"],input[type="tel"],input[type="email"],select,textarea{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:var(--font-body);
+  font-size:15px;padding:14px 16px;outline:none;transition:border-color 0.2s;
+  -webkit-appearance:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:100px;}
+
+/* ── CHIPS ── */
+.chip-group{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px;}
+.chip-group input{display:none;}
+.chip-group label{
+  display:inline-flex;align-items:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:99px;
+  padding:10px 20px;font-size:14px;color:var(--muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.chip-group input:checked+label{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);font-weight:600;}
+.chip-group label:hover{border-color:var(--muted);color:var(--text);}
+
+/* ── TRUE/FALSE ── */
+.tf-group{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.tf-group input{display:none;}
+.tf-group label{
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:18px;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;gap:8px;
+}
+.tf-group input:checked+label{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+
+/* ── SCALE ── */
+.scale-wrap{margin-bottom:4px;}
+.scale-track{display:flex;align-items:center;gap:14px;}
+.scale-track input[type="range"]{
+  flex:1;-webkit-appearance:none;background:var(--surface);
+  height:5px;border-radius:99px;border:none;padding:0;cursor:pointer;
+}
+.scale-track input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent);cursor:pointer;
+}
+.scale-val{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--accent);min-width:36px;text-align:center;}
+.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px;}
+
+/* ── ROW 2 ── */
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:480px){.row-2{grid-template-columns:1fr;}}
+.field-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px;display:block;}
+
+/* ── NAV ── */
+.step-nav{display:flex;gap:12px;margin-top:36px;align-items:center;}
+.btn-next{
+  flex:1;background:var(--accent);color:#0d0d0f;
+  font-family:var(--font-display);font-size:15px;font-weight:800;
+  border:none;border-radius:99px;padding:16px;cursor:pointer;transition:opacity 0.15s,transform 0.1s;
+}
+.btn-next:hover{opacity:0.88;}
+.btn-next:active{transform:scale(0.98);}
+.btn-back{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-family:var(--font-body);font-size:14px;border-radius:99px;padding:16px 24px;
+  cursor:pointer;transition:all 0.15s;
+}
+.btn-back:hover{border-color:var(--muted);color:var(--text);}
+.btn-skip{
+  background:transparent;border:none;color:var(--muted);
+  font-family:var(--font-body);font-size:13px;padding:8px 4px;
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;
+  transition:color 0.15s;white-space:nowrap;
+}
+.btn-skip:hover{color:var(--text);}
+
+/* ── SKIPPED REVIEW PAGE ── */
+#review-page{display:none;max-width:620px;margin:0 auto;padding:100px 24px 80px;}
+.review-header{
+  background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);
+  border-radius:var(--radius);padding:24px 28px;margin-bottom:28px;
+  display:flex;align-items:flex-start;gap:16px;
+}
+.review-icon{font-size:28px;flex-shrink:0;}
+.review-header h2{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:6px;}
+.review-header p{font-size:13px;color:var(--muted);}
+.skipped-list{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.skipped-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;
+}
+.skipped-item-label{font-size:14px;color:var(--text);}
+.skipped-item-step{font-size:11px;color:var(--muted);white-space:nowrap;}
+.go-back-btn{
+  background:transparent;border:1px solid var(--accent);color:var(--accent);
+  font-family:var(--font-body);font-size:13px;font-weight:600;border-radius:99px;
+  padding:8px 16px;cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.go-back-btn:hover{background:var(--accent-dim);}
+.review-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.submit-anyway{
+  flex:1;background:var(--accent);color:#0d0d0f;
+  font-family:var(--font-display);font-size:15px;font-weight:800;
+  border:none;border-radius:99px;padding:16px;cursor:pointer;
+  transition:opacity 0.15s;min-width:200px;
+}
+.submit-anyway:hover{opacity:0.88;}
+.back-to-form{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-family:var(--font-body);font-size:14px;border-radius:99px;
+  padding:16px 24px;cursor:pointer;transition:all 0.15s;
+}
+.back-to-form:hover{border-color:var(--muted);color:var(--text);}
+.err-submit{font-size:12px;color:var(--danger);margin-top:10px;display:none;}
+
+/* ── THANK YOU ── */
+#thankyou{display:none;max-width:560px;margin:0 auto;padding:120px 24px 80px;text-align:center;}
+.ty-icon{width:72px;height:72px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 28px;}
+#thankyou h2{font-family:var(--font-display);font-size:32px;font-weight:800;margin-bottom:12px;}
+#thankyou p{color:var(--muted);font-size:15px;max-width:380px;margin:0 auto;}
+
+.field-group{display:flex;flex-direction:column;gap:22px;}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">Lifestyle101</div>
+  <div class="topbar-right">
+    <span class="step-counter" id="step-counter" style="display:none"></span>
+    <button class="lang-toggle" onclick="toggleLang()" id="lang-btn">🌐 English</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+<div class="progress-pct" id="prog-pct" style="display:none"></div>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="hero-eyebrow" data-es="Tu Plan Personal" data-en="Your Personal Plan">Tu Plan Personal</div>
+  <h1><span data-es="Empieza aquí." data-en="Start here.">Empieza aquí.</span><br><span style="color:var(--accent)" data-es="Cuéntanos todo." data-en="Tell us everything.">Cuéntanos todo.</span></h1>
+  <p data-es="Este formulario nos ayuda a entender exactamente dónde estás para poder construir un plan hecho solo para ti. Sé honesto — no hay respuestas incorrectas. Puedes saltarte cualquier pregunta, pero recuerda: entre más detallado seas, mejor será tu plan." data-en="This form helps us understand exactly where you are so we can build a plan made just for you. Be honest — there are no wrong answers. You can skip any question, but remember: the more detail you give, the better your plan will be.">Este formulario nos ayuda a entender exactamente dónde estás para poder construir un plan hecho solo para ti. Sé honesto — no hay respuestas incorrectas. Puedes saltarte cualquier pregunta, pero recuerda: entre más detallado seas, mejor será tu plan.</p>
+  <button class="start-btn" onclick="startForm()" data-es="Comenzar →" data-en="Get Started →">Comenzar →</button>
+</div>
+
+<!-- STEPS WRAPPER -->
+<div class="steps-wrap" id="steps-wrap">
+
+  <!-- STEP 1 -->
+  <div class="step" id="step-1">
+    <div class="step-meta" data-es="Paso 1 de 9 — Información de Contacto" data-en="Step 1 of 9 — Contact Information">Paso 1 de 9 — Información de Contacto</div>
+    <div class="step-question" data-es="Primero, ¿cómo te llamamos y cómo te contactamos?" data-en="First, what do we call you and how do we reach you?">Primero, ¿cómo te llamamos y cómo te contactamos?</div>
+    <div class="step-hint" data-es="Esta información solo la usamos para enviarte tu plan personalizado." data-en="We only use this information to send you your personalized plan.">Esta información solo la usamos para enviarte tu plan personalizado.</div>
+    <div class="field-group">
+      <div>
+        <span class="field-label" data-es="Nombre completo" data-en="Full name">Nombre completo</span>
+        <input type="text" id="q-name" data-label-es="Nombre completo" data-label-en="Full name" placeholder="Ej. María López"/>
+      </div>
+      <div>
+        <span class="field-label" data-es="Número de WhatsApp o teléfono" data-en="WhatsApp or phone number">Número de WhatsApp o teléfono</span>
+        <input type="tel" id="q-phone" data-label-es="Teléfono / WhatsApp" data-label-en="Phone / WhatsApp" placeholder="Ej. +1 (214) 555-0000"/>
+      </div>
+      <div>
+        <span class="field-label" data-es="Correo electrónico (opcional)" data-en="Email address (optional)">Correo electrónico (opcional)</span>
+        <input type="email" id="q-email" data-label-es="Correo electrónico" data-label-en="Email" placeholder="Ej. maria@gmail.com"/>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-next" onclick="goNext(1)" data-es="Siguiente →" data-en="Next →">Siguiente →</button>
+      <button class="btn-skip" onclick="skipStep(1)" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step-2">
+    <div class="step-meta" data-es="Paso 2 de 9 — Tu Cuerpo" data-en="Step 2 of 9 — Your Body">Paso 2 de 9 — Tu Cuerpo</div>
+    <div class="step-question" data-es="Cuéntanos sobre tu cuerpo en este momento." data-en="Tell us about your body right now.">Cuéntanos sobre tu cuerpo en este momento.</div>
+    <div class="step-hint" data-es="Sé honesto — esta información es confidencial y solo la usamos para construir tu plan." data-en="Be honest — this information is confidential and only used to build your plan.">Sé honesto — esta información es confidencial y solo la usamos para construir tu plan.</div>
+    <div class="field-group">
+      <div class="row-2">
+        <div>
+          <span class="field-label" data-es="Edad" data-en="Age">Edad</span>
+          <input type="number" id="q-age" data-label-es="Edad" data-label-en="Age" placeholder="Ej. 28" min="10" max="99"/>
+        </div>
+        <div>
+          <span class="field-label" data-es="Sexo biológico" data-en="Biological sex">Sexo biológico</span>
+          <select id="q-sex" data-label-es="Sexo biológico" data-label-en="Biological sex">
+            <option value="">Seleccionar…</option>
+            <option value="Masculino / Male">Masculino</option>
+            <option value="Femenino / Female">Femenino</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-2">
+        <div>
+          <span class="field-label" data-es="Altura" data-en="Height">Altura</span>
+          <input type="text" id="q-height" data-label-es="Altura" data-label-en="Height" placeholder="Ej. 5'7&quot; o 170 cm"/>
+        </div>
+        <div>
+          <span class="field-label" data-es="Peso actual" data-en="Current weight">Peso actual</span>
+          <input type="text" id="q-weight" data-label-es="Peso actual" data-label-en="Current weight" placeholder="Ej. 175 lbs o 80 kg"/>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="Peso meta (si tienes uno en mente)" data-en="Goal weight (if you have one in mind)">Peso meta (si tienes uno en mente)</span>
+        <input type="text" id="q-goalweight" data-label-es="Peso meta" data-label-en="Goal weight" placeholder="Ej. 155 lbs"/>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goPrev(2)" data-es="← Atrás" data-en="← Back">← Atrás</button>
+      <button class="btn-next" onclick="goNext(2)" data-es="Siguiente →" data-en="Next →">Siguiente →</button>
+      <button class="btn-skip" onclick="skipStep(2)" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step-3">
+    <div class="step-meta" data-es="Paso 3 de 9 — Tu Meta y Tu Por Qué" data-en="Step 3 of 9 — Your Goal and Your Why">Paso 3 de 9 — Tu Meta y Tu Por Qué</div>
+    <div class="step-question" data-es="¿Qué quieres lograr y por qué es importante para ti?" data-en="What do you want to achieve and why does it matter to you?">¿Qué quieres lograr y por qué es importante para ti?</div>
+    <div class="step-hint" data-es="Cuanto más específico seas, mejor podremos personalizar tu plan." data-en="The more specific you are, the better we can personalize your plan.">Cuanto más específico seas, mejor podremos personalizar tu plan.</div>
+    <div class="field-group">
+      <div>
+        <span class="field-label" data-es="¿Cuál es tu meta principal?" data-en="What is your primary goal?">¿Cuál es tu meta principal?</span>
+        <div class="chip-group">
+          <input type="radio" name="goal" id="g1" value="Perder grasa / Lose fat"/><label for="g1" data-es="Perder grasa" data-en="Lose fat">Perder grasa</label>
+          <input type="radio" name="goal" id="g2" value="Ganar músculo / Build muscle"/><label for="g2" data-es="Ganar músculo" data-en="Build muscle">Ganar músculo</label>
+          <input type="radio" name="goal" id="g3" value="Ambos — perder grasa y ganar músculo / Both"/><label for="g3" data-es="Ambos" data-en="Both">Ambos</label>
+          <input type="radio" name="goal" id="g4" value="Mejorar energía y salud en general / Improve energy and health"/><label for="g4" data-es="Mejorar energía y salud" data-en="Improve energy and health">Mejorar energía y salud</label>
+          <input type="radio" name="goal" id="g5" value="Mejorar rendimiento deportivo / Improve athletic performance"/><label for="g5" data-es="Rendimiento deportivo" data-en="Athletic performance">Rendimiento deportivo</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Por qué quieres mejorar tu salud ahora? ¿Qué te motivó a dar este paso?" data-en="Why do you want to improve your health now? What motivated you to take this step?">¿Por qué quieres mejorar tu salud ahora? ¿Qué te motivó a dar este paso?</span>
+        <textarea id="q-why" data-label-es="Motivación principal" data-label-en="Main motivation" placeholder="Sé específico — puede ser una fecha, un evento, una sensación, o una persona…"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cómo se vería el éxito para ti en 90 días?" data-en="What would success look like for you in 90 days?">¿Cómo se vería el éxito para ti en 90 días?</span>
+        <textarea id="q-success" data-label-es="Visión de éxito en 90 días" data-label-en="90-day vision of success" placeholder="Ej. Haber bajado 15 libras, tener más energía, verme bien en fotos, ir al gimnasio con constancia…"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Estás buscando resultados rápidos o un cambio de estilo de vida a largo plazo?" data-en="Are you looking for quick results or a long-term lifestyle change?">¿Estás buscando resultados rápidos o un cambio de estilo de vida a largo plazo?</span>
+        <div class="tf-group">
+          <input type="radio" name="quickfix" id="qf1" value="Resultados rápidos / Quick results"/><label for="qf1">⚡ <span data-es="Resultados rápidos" data-en="Quick results">Resultados rápidos</span></label>
+          <input type="radio" name="quickfix" id="qf2" value="Cambio de estilo de vida a largo plazo / Long-term lifestyle change"/><label for="qf2">🌱 <span data-es="Largo plazo" data-en="Long-term">Largo plazo</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goPrev(3)" data-es="← Atrás" data-en="← Back">← Atrás</button>
+      <button class="btn-next" onclick="goNext(3)" data-es="Siguiente →" data-en="Next →">Siguiente →</button>
+      <button class="btn-skip" onclick="skipStep(3)" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step-4">
+    <div class="step-meta" data-es="Paso 4 de 9 — Mentalidad y Compromiso" data-en="Step 4 of 9 — Mindset and Commitment">Paso 4 de 9 — Mentalidad y Compromiso</div>
+    <div class="step-question" data-es="Seamos honestos contigo mismo." data-en="Let's be honest with yourself.">Seamos honestos contigo mismo.</div>
+    <div class="step-hint" data-es="Estas respuestas nos ayudan a diseñar un plan que realmente puedas mantener." data-en="These answers help us design a plan you can actually stick to.">Estas respuestas nos ayudan a diseñar un plan que realmente puedas mantener.</div>
+    <div class="field-group">
+      <div>
+        <span class="field-label" data-es="¿Qué tan motivado/a estás en este momento? (1 = nada motivado, 10 = al máximo)" data-en="How motivated are you right now? (1 = not at all, 10 = extremely motivated)">¿Qué tan motivado/a estás en este momento? (1 = nada motivado, 10 = al máximo)</span>
+        <div class="scale-wrap">
+          <div class="scale-track">
+            <input type="range" id="q-motivation" min="1" max="10" value="5" oninput="document.getElementById('mot-val').textContent=this.value"/>
+            <div class="scale-val" id="mot-val">5</div>
+          </div>
+          <div class="scale-labels"><span data-es="Nada motivado" data-en="Not at all">Nada motivado</span><span data-es="Al máximo" data-en="Extremely">Al máximo</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Estás dispuesto/a a comprometerte a largo plazo, no solo por unas semanas?" data-en="Are you willing to commit long-term, not just for a few weeks?">¿Estás dispuesto/a a comprometerte a largo plazo, no solo por unas semanas?</span>
+        <div class="tf-group">
+          <input type="radio" name="commit" id="c1" value="Sí, estoy comprometido/a a largo plazo / Yes, I am committed long-term"/><label for="c1">✅ <span data-es="Sí, estoy comprometido/a" data-en="Yes, I am committed">Sí, estoy comprometido/a</span></label>
+          <input type="radio" name="commit" id="c2" value="Todavía no estoy seguro/a / Not sure yet"/><label for="c2">🤔 <span data-es="Todavía no estoy seguro/a" data-en="Not sure yet">Todavía no estoy seguro/a</span></label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Qué crees que podría frenarte? ¿Cuál es tu mayor obstáculo?" data-en="What do you think could hold you back? What is your biggest obstacle?">¿Qué crees que podría frenarte? ¿Cuál es tu mayor obstáculo?</span>
+        <div class="chip-group">
+          <input type="checkbox" id="ob1" value="Falta de tiempo / Lack of time"/><label for="ob1" data-es="Falta de tiempo" data-en="Lack of time">Falta de tiempo</label>
+          <input type="checkbox" id="ob2" value="Falta de motivación / Lack of motivation"/><label for="ob2" data-es="Falta de motivación" data-en="Lack of motivation">Falta de motivación</label>
+          <input type="checkbox" id="ob3" value="Dinero limitado / Limited budget"/><label for="ob3" data-es="Dinero limitado" data-en="Limited budget">Dinero limitado</label>
+          <input type="checkbox" id="ob4" value="No ver resultados rápido / Not seeing results fast enough"/><label for="ob4" data-es="No ver resultados rápido" data-en="Slow results">No ver resultados rápido</label>
+          <input type="checkbox" id="ob5" value="Lesiones o dolor físico / Injuries or physical pain"/><label for="ob5" data-es="Lesiones o dolor" data-en="Injuries or pain">Lesiones o dolor</label>
+          <input type="checkbox" id="ob6" value="Responsabilidades familiares o laborales / Family or work responsibilities"/><label for="ob6" data-es="Familia o trabajo" data-en="Family or work">Familia o trabajo</label>
+          <input type="checkbox" id="ob7" value="No sé por dónde empezar / Don't know where to start"/><label for="ob7" data-es="No sé por dónde empezar" data-en="Don't know where to start">No sé por dónde empezar</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuál es tu mayor miedo o preocupación al comenzar este proceso?" data-en="What is your biggest fear or concern about starting this process?">¿Cuál es tu mayor miedo o preocupación al comenzar este proceso?</span>
+        <textarea id="q-fear" data-label-es="Mayor miedo o preocupación" data-label-en="Biggest fear or concern" placeholder="Ej. Tengo miedo de volver a rendirme, no creo tener suficiente tiempo, me preocupa el costo…"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cómo prefieres que te ayudemos a mantenerte responsable?" data-en="How do you prefer to be held accountable?">¿Cómo prefieres que te ayudemos a mantenerte responsable?</span>
+        <div class="chip-group">
+          <input type="checkbox" id="ac1" value="Llamadas de seguimiento semanales / Weekly check-in calls"/><label for="ac1" data-es="Llamadas semanales" data-en="Weekly calls">Llamadas semanales</label>
+          <input type="checkbox" id="ac2" value="Mensajes de texto diarios / Daily text messages"/><label for="ac2" data-es="Mensajes diarios" data-en="Daily texts">Mensajes diarios</label>
+          <input type="checkbox" id="ac3" value="Fotos de progreso / Progress photos"/><label for="ac3" data-es="Fotos de progreso" data-en="Progress photos">Fotos de progreso</label>
+          <input type="checkbox" id="ac4" value="Registro de peso semanal / Weekly weigh-in"/><label for="ac4" data-es="Registro de peso semanal" data-en="Weekly weigh-in">Registro de peso semanal</label>
+          <input type="checkbox" id="ac5" value="Soy autodisciplinado/a, no necesito seguimiento / Self-disciplined, no check-ins needed"/><label for="ac5" data-es="Soy autodisciplinado/a" data-en="Self-disciplined">Soy autodisciplinado/a</label>
+        </div>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goPrev(4)" data-es="← Atrás" data-en="← Back">← Atrás</button>
+      <button class="btn-next" onclick="goNext(4)" data-es="Siguiente →" data-en="Next →">Siguiente →</button>
+      <button class="btn-skip" onclick="skipStep(4)" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step-5">
+    <div class="step-meta" data-es="Paso 5 de 9 — Entrenamiento" data-en="Step 5 of 9 — Training">Paso 5 de 9 — Entrenamiento</div>
+    <div class="step-question" data-es="Hablemos de ejercicio y actividad física." data-en="Let's talk about exercise and physical activity.">Hablemos de ejercicio y actividad física.</div>
+    <div class="step-hint" data-es="No hay respuestas malas aquí. Esto nos ayuda a diseñar una rutina que funcione para tu vida real." data-en="There are no wrong answers here. This helps us design a routine that works for your real life.">No hay respuestas malas aquí. Esto nos ayuda a diseñar una rutina que funcione para tu vida real.</div>
+    <div class="field-group">
+      <div>
+        <span class="field-label" data-es="¿Tienes experiencia entrenando?" data-en="Do you have any training experience?">¿Tienes experiencia entrenando?</span>
+        <div class="chip-group">
+          <input type="radio" name="exp" id="e1" value="Principiante completo — nunca he entrenado con constancia / Complete beginner"/><label for="e1" data-es="Principiante completo" data-en="Complete beginner">Principiante completo</label>
+          <input type="radio" name="exp" id="e2" value="Algo de experiencia (0 a 6 meses) / Some experience (0–6 months)"/><label for="e2" data-es="Algo de experiencia" data-en="Some experience">Algo de experiencia</label>
+          <input type="radio" name="exp" id="e3" value="Intermedio (6 meses a 2 años) / Intermediate (6 months – 2 years)"/><label for="e3" data-es="Intermedio" data-en="Intermediate">Intermedio</label>
+          <input type="radio" name="exp" id="e4" value="Avanzado (más de 2 años constante) / Advanced (2+ years consistent)"/><label for="e4" data-es="Avanzado" data-en="Advanced">Avanzado</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuántos días a la semana puedes comprometerte a entrenar?" data-en="How many days per week can you commit to training?">¿Cuántos días a la semana puedes comprometerte a entrenar?</span>
+        <div class="chip-group">
+          <input type="radio" name="days" id="d1" value="1 a 2 días / 1–2 days"/><label for="d1">1–2</label>
+          <input type="radio" name="days" id="d2" value="3 días / 3 days"/><label for="d2">3</label>
+          <input type="radio" name="days" id="d3" value="4 días / 4 days"/><label for="d3">4</label>
+          <input type="radio" name="days" id="d4" value="5 días / 5 days"/><label for="d4">5</label>
+          <input type="radio" name="days" id="d5" value="6 días o más / 6+ days"/><label for="d5">6+</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuánto tiempo puedes dedicar a cada sesión de entrenamiento?" data-en="How much time can you dedicate to each training session?">¿Cuánto tiempo puedes dedicar a cada sesión de entrenamiento?</span>
+        <div class="chip-group">
+          <input type="radio" name="duration" id="du1" value="30 minutos o menos / 30 minutes or less"/><label for="du1" data-es="30 min o menos" data-en="30 min or less">30 min o menos</label>
+          <input type="radio" name="duration" id="du2" value="30 a 45 minutos / 30–45 minutes"/><label for="du2">30–45 min</label>
+          <input type="radio" name="duration" id="du3" value="45 a 60 minutos / 45–60 minutes"/><label for="du3">45–60 min</label>
+          <input type="radio" name="duration" id="du4" value="60 a 90 minutos / 60–90 minutes"/><label for="du4">60–90 min</label>
+          <input type="radio" name="duration" id="du5" value="Más de 90 minutos / 90+ minutes"/><label for="du5" data-es="Más de 90 min" data-en="90+ minutes">Más de 90 min</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Tienes acceso a un gimnasio?" data-en="Do you have access to a gym?">¿Tienes acceso a un gimnasio?</span>
+        <div class="tf-group">
+          <input type="radio" name="gym" id="gym1" value="Sí, tengo acceso a un gimnasio / Yes, I have gym access"/><label for="gym1">✅ <span data-es="Sí, tengo gimnasio" data-en="Yes, I have a gym">Sí, tengo gimnasio</span></label>
+          <input type="radio" name="gym" id="gym2" value="No, entreno en casa o al aire libre / No, I train at home or outdoors"/><label for="gym2">🏠 <span data-es="No, en casa o afuera" data-en="No, at home or outdoors">No, en casa o afuera</span></label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Qué equipo tienes disponible actualmente?" data-en="What equipment do you currently have available?">¿Qué equipo tienes disponible actualmente?</span>
+        <div class="chip-group">
+          <input type="checkbox" id="eq1" value="Gimnasio completo / Full gym"/><label for="eq1" data-es="Gimnasio completo" data-en="Full gym">Gimnasio completo</label>
+          <input type="checkbox" id="eq2" value="Mancuernas / Dumbbells"/><label for="eq2" data-es="Mancuernas" data-en="Dumbbells">Mancuernas</label>
+          <input type="checkbox" id="eq3" value="Bandas de resistencia / Resistance bands"/><label for="eq3" data-es="Bandas de resistencia" data-en="Resistance bands">Bandas de resistencia</label>
+          <input type="checkbox" id="eq4" value="Solo peso corporal / Bodyweight only"/><label for="eq4" data-es="Solo peso corporal" data-en="Bodyweight only">Solo peso corporal</label>
+          <input type="checkbox" id="eq5" value="Máquinas de cardio / Cardio machines"/><label for="eq5" data-es="Máquinas de cardio" data-en="Cardio machines">Máquinas de cardio</label>
+          <input type="checkbox" id="eq6" value="Espacio al aire libre / Outdoor space"/><label for="eq6" data-es="Espacio al aire libre" data-en="Outdoor space">Espacio al aire libre</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Qué tipos de ejercicio disfrutas o te gustaría hacer?" data-en="What types of exercise do you enjoy or would like to do?">¿Qué tipos de ejercicio disfrutas o te gustaría hacer?</span>
+        <textarea id="q-exlove" data-label-es="Ejercicios que disfruta" data-label-en="Exercises enjoyed" placeholder="Ej. Me gusta levantar pesas, caminar, jugar fútbol, andar en bicicleta…"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Qué tipos de ejercicio odias o quieres evitar?" data-en="What types of exercise do you hate or want to avoid?">¿Qué tipos de ejercicio odias o quieres evitar?</span>
+        <textarea id="q-exhate" data-label-es="Ejercicios que quiere evitar" data-label-en="Exercises to avoid" placeholder="Ej. Odio correr en la caminadora, no me gusta el yoga, evito las sentadillas por dolor de rodilla…"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Tienes alguna lesión, dolor crónico, o limitación física que debamos considerar?" data-en="Do you have any injuries, chronic pain, or physical limitations we should consider?">¿Tienes alguna lesión, dolor crónico, o limitación física que debamos considerar?</span>
+        <textarea id="q-injury" data-label-es="Lesiones o limitaciones físicas" data-label-en="Injuries or physical limitations" placeholder="Ej. Dolor en la rodilla derecha, problemas de espalda baja, hombro operado — o 'ninguna'"></textarea>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goPrev(5)" data-es="← Atrás" data-en="← Back">← Atrás</button>
+      <button class="btn-next" onclick="goNext(5)" data-es="Siguiente →" data-en="Next →">Siguiente →</button>
+      <button class="btn-skip" onclick="skipStep(5)" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step-6">
+    <div class="step-meta" data-es="Paso 6 de 9 — Nutrición Actual" data-en="Step 6 of 9 — Current Nutrition">Paso 6 de 9 — Nutrición Actual</div>
+    <div class="step-question" data-es="¿Cómo comes en este momento?" data-en="How are you eating right now?">¿Cómo comes en este momento?</div>
+    <div class="step-hint" data-es="No te vamos a juzgar. Necesitamos saber tu punto de partida para poder ayudarte." data-en="We are not here to judge you. We need to know your starting point so we can help you.">No te vamos a juzgar. Necesitamos saber tu punto de partida para poder ayudarte.</div>
+    <div class="field-group">
+      <div>
+        <span class="field-label" data-es="¿Cómo describirías tus hábitos alimenticios actuales?" data-en="How would you describe your current eating habits?">¿Cómo describirías tus hábitos alimenticios actuales?</span>
+        <div class="chip-group">
+          <input type="radio" name="diethabit" id="dh1" value="Sin estructura — como lo que sea, cuando sea / No structure"/><label for="dh1" data-es="Sin estructura — como lo que sea" data-en="No structure — eat whatever">Sin estructura — como lo que sea</label>
+          <input type="radio" name="diethabit" id="dh2" value="Como bien a veces, pero tengo malos hábitos que reconozco / Mostly okay with known bad habits"/><label for="dh2" data-es="Regular, con malos hábitos que reconozco" data-en="Okay, but I have known bad habits">Regular, con malos hábitos que reconozco</label>
+          <input type="radio" name="diethabit" id="dh3" value="Como bastante bien, pero no está del todo optimizado / Fairly good but not optimized"/><label for="dh3" data-es="Bastante bien, pero mejorable" data-en="Fairly good but can improve">Bastante bien, pero mejorable</label>
+          <input type="radio" name="diethabit" id="dh4" value="Ya como limpio la mayor parte del tiempo / Already eat clean most of the time"/><label for="dh4" data-es="Ya como limpio" data-en="Already eat clean">Ya como limpio</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Qué alimentos amas o comes con mayor frecuencia?" data-en="What foods do you love or eat most often?">¿Qué alimentos amas o comes con mayor frecuencia?</span>
+        <textarea id="q-foodlove" data-label-es="Alimentos favoritos o más frecuentes" data-label-en="Favorite or most frequent foods" placeholder="Ej. Arroz con frijoles, pollo frito, pizza, tacos, pasta…"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Qué alimentos odias o definitivamente no comerías?" data-en="What foods do you hate or would definitely not eat?">¿Qué alimentos odias o definitivamente no comerías?</span>
+        <textarea id="q-foodhate" data-label-es="Alimentos que no come" data-label-en="Foods they won't eat" placeholder="Ej. No me gusta el hígado, odio el brócoli, nunca comería cosas raras…"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Tienes alguna alergia alimentaria o restricción dietética?" data-en="Do you have any food allergies or dietary restrictions?">¿Tienes alguna alergia alimentaria o restricción dietética?</span>
+        <input type="text" id="q-allergy" data-label-es="Alergias o restricciones alimentarias" data-label-en="Food allergies or restrictions" placeholder="Ej. Alérgico a las nueces, sin lactosa, sin gluten — o 'ninguna'"/>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuántas veces comes al día, en promedio?" data-en="How many times do you eat per day, on average?">¿Cuántas veces comes al día, en promedio?</span>
+        <div class="chip-group">
+          <input type="radio" name="meals" id="m1" value="1 vez al día — OMAD / Once a day (OMAD)"/><label for="m1">1 (OMAD)</label>
+          <input type="radio" name="meals" id="m2" value="2 veces al día / Twice a day"/><label for="m2">2</label>
+          <input type="radio" name="meals" id="m3" value="3 veces al día / 3 times a day"/><label for="m3">3</label>
+          <input type="radio" name="meals" id="m4" value="3 veces al día más snacks / 3 times a day plus snacks"/><label for="m4">3 + snacks</label>
+          <input type="radio" name="meals" id="m5" value="Picando todo el día sin horario fijo / Grazing throughout the day"/><label for="m5" data-es="Picando todo el día" data-en="Grazing all day">Picando todo el día</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cocinas en casa, comes fuera, o haces una combinación de ambas cosas?" data-en="Do you cook at home, eat out, or do a combination of both?">¿Cocinas en casa, comes fuera, o haces una combinación de ambas cosas?</span>
+        <div class="chip-group">
+          <input type="radio" name="cooking" id="ck1" value="Cocino en casa la mayor parte del tiempo / Mostly cook at home"/><label for="ck1" data-es="Cocino en casa" data-en="Cook at home">Cocino en casa</label>
+          <input type="radio" name="cooking" id="ck2" value="Mitad cocino, mitad como fuera / Mix of cooking and eating out"/><label for="ck2" data-es="Mitad y mitad" data-en="Half and half">Mitad y mitad</label>
+          <input type="radio" name="cooking" id="ck3" value="Como fuera la mayor parte del tiempo / Mostly eat out"/><label for="ck3" data-es="Como fuera la mayoría" data-en="Mostly eat out">Como fuera la mayoría</label>
+          <input type="radio" name="cooking" id="ck4" value="Preparo mis comidas en grandes cantidades una o dos veces a la semana / Bulk meal prep"/><label for="ck4" data-es="Preparo en cantidades grandes" data-en="Bulk meal prep">Preparo en cantidades grandes</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuánto tiempo tienes disponible para preparar tu comida cada día?" data-en="How much time do you have available to prepare your food each day?">¿Cuánto tiempo tienes disponible para preparar tu comida cada día?</span>
+        <div class="chip-group">
+          <input type="radio" name="preptime" id="pt1" value="Casi nada — necesito opciones rápidas / Almost none — need quick options"/><label for="pt1" data-es="Casi nada" data-en="Almost none">Casi nada</label>
+          <input type="radio" name="preptime" id="pt2" value="15 a 20 minutos / 15–20 minutes"/><label for="pt2">15–20 min</label>
+          <input type="radio" name="preptime" id="pt3" value="30 a 45 minutos / 30–45 minutes"/><label for="pt3">30–45 min</label>
+          <input type="radio" name="preptime" id="pt4" value="1 hora o más / 1 hour or more"/><label for="pt4" data-es="1 hora o más" data-en="1 hour or more">1 hora o más</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Hay algún alimento que comas todos los días y del que dependas mucho?" data-en="Is there any food you eat every single day and rely on heavily?">¿Hay algún alimento que comas todos los días y del que dependas mucho?</span>
+        <input type="text" id="q-staple" data-label-es="Alimentos de consumo diario" data-label-en="Daily staple foods" placeholder="Ej. Arroz en cada comida, huevos todas las mañanas, proteína en polvo después de entrenar…"/>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goPrev(6)" data-es="← Atrás" data-en="← Back">← Atrás</button>
+      <button class="btn-next" onclick="goNext(6)" data-es="Siguiente →" data-en="Next →">Siguiente →</button>
+      <button class="btn-skip" onclick="skipStep(6)" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step-7">
+    <div class="step-meta" data-es="Paso 7 de 9 — Presupuesto" data-en="Step 7 of 9 — Budget">Paso 7 de 9 — Presupuesto</div>
+    <div class="step-question" data-es="Hablemos de dinero — sin tabús." data-en="Let's talk money — no judgment here.">Hablemos de dinero — sin tabús.</div>
+    <div class="step-hint" data-es="Saber tu presupuesto nos permite diseñar un plan que puedas costear de verdad, sin sorpresas." data-en="Knowing your budget allows us to design a plan you can actually afford, without surprises.">Saber tu presupuesto nos permite diseñar un plan que puedas costear de verdad, sin sorpresas.</div>
+    <div class="field-group">
+      <div>
+        <span class="field-label" data-es="¿Cuánto puedes gastar en comida a la semana?" data-en="How much can you spend on food per week?">¿Cuánto puedes gastar en comida a la semana?</span>
+        <div class="chip-group">
+          <input type="radio" name="foodbudget" id="fb1" value="Menos de $50 por semana / Under $50 per week"/><label for="fb1">Menos de $50</label>
+          <input type="radio" name="foodbudget" id="fb2" value="$50 a $100 por semana / $50–$100 per week"/><label for="fb2">$50–$100</label>
+          <input type="radio" name="foodbudget" id="fb3" value="$100 a $150 por semana / $100–$150 per week"/><label for="fb3">$100–$150</label>
+          <input type="radio" name="foodbudget" id="fb4" value="$150 a $200 por semana / $150–$200 per week"/><label for="fb4">$150–$200</label>
+          <input type="radio" name="foodbudget" id="fb5" value="Más de $200 por semana / $200+ per week"/><label for="fb5">$200+</label>
+          <input type="radio" name="foodbudget" id="fb6" value="Flexible — no tengo un presupuesto fijo / Flexible — no strict budget"/><label for="fb6" data-es="Flexible" data-en="Flexible">Flexible</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuánto puedes gastar en suplementos al mes?" data-en="How much can you spend on supplements per month?">¿Cuánto puedes gastar en suplementos al mes?</span>
+        <div class="chip-group">
+          <input type="radio" name="suppbudget" id="sb1" value="$0 — no quiero usar suplementos / $0 — no supplements"/><label for="sb1">$0</label>
+          <input type="radio" name="suppbudget" id="sb2" value="Menos de $30 al mes / Under $30 per month"/><label for="sb2">Menos de $30</label>
+          <input type="radio" name="suppbudget" id="sb3" value="$30 a $60 al mes / $30–$60 per month"/><label for="sb3">$30–$60</label>
+          <input type="radio" name="suppbudget" id="sb4" value="$60 a $100 al mes / $60–$100 per month"/><label for="sb4">$60–$100</label>
+          <input type="radio" name="suppbudget" id="sb5" value="Más de $100 al mes / $100+ per month"/><label for="sb5">$100+</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cómo planeas manejar tus comidas día a día?" data-en="How do you plan to handle your meals day to day?">¿Cómo planeas manejar tus comidas día a día?</span>
+        <div class="chip-group">
+          <input type="radio" name="mealapproach" id="ma1" value="Cocino fresco todos los días / Cook fresh every day"/><label for="ma1" data-es="Cocino fresco diario" data-en="Cook fresh daily">Cocino fresco diario</label>
+          <input type="radio" name="mealapproach" id="ma2" value="Preparo mis comidas una vez a la semana / Meal prep once a week"/><label for="ma2" data-es="Preparo 1 vez a la semana" data-en="Prep once a week">Preparo 1 vez a la semana</label>
+          <input type="radio" name="mealapproach" id="ma3" value="Preparo mis comidas dos veces a la semana / Meal prep twice a week"/><label for="ma3" data-es="Preparo 2 veces a la semana" data-en="Prep twice a week">Preparo 2 veces a la semana</label>
+          <input type="radio" name="mealapproach" id="ma4" value="Mezcla de cocinar en casa y comer fuera / Mix of cooking and eating out"/><label for="ma4" data-es="Mezcla" data-en="Mix">Mezcla</label>
+          <input type="radio" name="mealapproach" id="ma5" value="Como fuera la mayor parte del tiempo / Mostly eat out"/><label for="ma5" data-es="Como fuera la mayoría" data-en="Mostly eat out">Como fuera la mayoría</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Tienes una cocina completa disponible para usar?" data-en="Do you have a full kitchen available to use?">¿Tienes una cocina completa disponible para usar?</span>
+        <div class="tf-group">
+          <input type="radio" name="kitchen" id="k1" value="Sí, tengo cocina completa / Yes, I have a full kitchen"/><label for="k1">✅ <span data-es="Sí, tengo cocina" data-en="Yes, I have a kitchen">Sí, tengo cocina</span></label>
+          <input type="radio" name="kitchen" id="k2" value="No, solo tengo microondas o acceso limitado / No, only microwave or limited access"/><label for="k2">⚡ <span data-es="Solo microondas" data-en="Microwave only">Solo microondas</span></label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Estás dispuesto/a a llevar un registro de tus calorías o macronutrientes?" data-en="Are you willing to track your calories or macronutrients?">¿Estás dispuesto/a a llevar un registro de tus calorías o macronutrientes?</span>
+        <div class="chip-group">
+          <input type="radio" name="tracking" id="tr1" value="Sí, voy a registrar todo con detalle / Yes, I will track everything in detail"/><label for="tr1" data-es="Sí, registro todo" data-en="Yes, track everything">Sí, registro todo</label>
+          <input type="radio" name="tracking" id="tr2" value="Tal vez, de forma general y aproximada / Maybe, loosely and approximately"/><label for="tr2" data-es="De forma aproximada" data-en="Loosely">De forma aproximada</label>
+          <input type="radio" name="tracking" id="tr3" value="No, prefiero un enfoque simple sin contar nada / No, I prefer a simple approach without counting"/><label for="tr3" data-es="No, prefiero algo simple" data-en="No, keep it simple">No, prefiero algo simple</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Tomas algún suplemento actualmente?" data-en="Do you currently take any supplements?">¿Tomas algún suplemento actualmente?</span>
+        <input type="text" id="q-supps" data-label-es="Suplementos actuales" data-label-en="Current supplements" placeholder="Ej. Proteína en polvo, creatina, multivitamínico, omega-3 — o 'ninguno'"/>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goPrev(7)" data-es="← Atrás" data-en="← Back">← Atrás</button>
+      <button class="btn-next" onclick="goNext(7)" data-es="Siguiente →" data-en="Next →">Siguiente →</button>
+      <button class="btn-skip" onclick="skipStep(7)" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step-8">
+    <div class="step-meta" data-es="Paso 8 de 9 — Estilo de Vida e Historial" data-en="Step 8 of 9 — Lifestyle and History">Paso 8 de 9 — Estilo de Vida e Historial</div>
+    <div class="step-question" data-es="Tu vida fuera del gimnasio también forma parte del plan." data-en="Your life outside the gym is also part of the plan.">Tu vida fuera del gimnasio también forma parte del plan.</div>
+    <div class="step-hint" data-es="El sueño, el estrés, y el trabajo impactan tus resultados tanto como el ejercicio." data-en="Sleep, stress, and work impact your results just as much as exercise does.">El sueño, el estrés, y el trabajo impactan tus resultados tanto como el ejercicio.</div>
+    <div class="field-group">
+      <div>
+        <span class="field-label" data-es="¿Qué tipo de trabajo tienes?" data-en="What type of work do you do?">¿Qué tipo de trabajo tienes?</span>
+        <div class="chip-group">
+          <input type="radio" name="job" id="j1" value="Trabajo de escritorio — paso la mayor parte del día sentado/a / Desk job — mostly sitting"/><label for="j1" data-es="Trabajo de escritorio" data-en="Desk job">Trabajo de escritorio</label>
+          <input type="radio" name="job" id="j2" value="Trabajo activo — estoy de pie o moviéndome, pero no es físicamente exigente / Active job — on feet but not demanding"/><label for="j2" data-es="Activo — de pie, moviéndome" data-en="Active — on feet, moving">Activo — de pie, moviéndome</label>
+          <input type="radio" name="job" id="j3" value="Trabajo físicamente exigente — carga, construcción, entrega, etc. / Physically demanding — labor, construction, delivery"/><label for="j3" data-es="Físicamente exigente" data-en="Physically demanding">Físicamente exigente</label>
+          <input type="radio" name="job" id="j4" value="Varía mucho de un día a otro / Varies a lot day to day"/><label for="j4" data-es="Varía cada día" data-en="Varies daily">Varía cada día</label>
+          <input type="radio" name="job" id="j5" value="Actualmente no estoy trabajando / Currently not working"/><label for="j5" data-es="No estoy trabajando" data-en="Not working">No estoy trabajando</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuántas horas duermes en promedio por noche?" data-en="How many hours do you sleep per night on average?">¿Cuántas horas duermes en promedio por noche?</span>
+        <div class="chip-group">
+          <input type="radio" name="sleep" id="sl1" value="Menos de 5 horas / Less than 5 hours"/><label for="sl1" data-es="Menos de 5 hrs" data-en="Less than 5 hrs">Menos de 5 hrs</label>
+          <input type="radio" name="sleep" id="sl2" value="5 a 6 horas / 5–6 hours"/><label for="sl2">5–6 hrs</label>
+          <input type="radio" name="sleep" id="sl3" value="6 a 7 horas / 6–7 hours"/><label for="sl3">6–7 hrs</label>
+          <input type="radio" name="sleep" id="sl4" value="7 a 8 horas / 7–8 hours"/><label for="sl4">7–8 hrs</label>
+          <input type="radio" name="sleep" id="sl5" value="Más de 8 horas / More than 8 hours"/><label for="sl5" data-es="Más de 8 hrs" data-en="More than 8 hrs">Más de 8 hrs</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuál es tu nivel de estrés en el día a día? (1 = muy bajo, 10 = muy alto)" data-en="What is your day-to-day stress level? (1 = very low, 10 = very high)">¿Cuál es tu nivel de estrés en el día a día? (1 = muy bajo, 10 = muy alto)</span>
+        <div class="scale-wrap">
+          <div class="scale-track">
+            <input type="range" id="q-stress" min="1" max="10" value="5" oninput="document.getElementById('stress-val').textContent=this.value"/>
+            <div class="scale-val" id="stress-val">5</div>
+          </div>
+          <div class="scale-labels"><span data-es="Muy bajo" data-en="Very low">Muy bajo</span><span data-es="Muy alto" data-en="Very high">Muy alto</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cuánta agua bebes al día, aproximadamente?" data-en="How much water do you drink per day, approximately?">¿Cuánta agua bebes al día, aproximadamente?</span>
+        <div class="chip-group">
+          <input type="radio" name="water" id="w1" value="Casi nada / Almost none"/><label for="w1" data-es="Casi nada" data-en="Almost none">Casi nada</label>
+          <input type="radio" name="water" id="w2" value="1 a 4 vasos al día / 1–4 glasses per day"/><label for="w2">1–4 vasos</label>
+          <input type="radio" name="water" id="w3" value="4 a 8 vasos al día / 4–8 glasses per day"/><label for="w3">4–8 vasos</label>
+          <input type="radio" name="water" id="w4" value="Más de 8 vasos al día / More than 8 glasses per day"/><label for="w4">8+ vasos</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Tienes algún vicio como el alcohol, el cigarro u otros?" data-en="Do you have any vices such as alcohol, smoking, or others?">¿Tienes algún vicio como el alcohol, el cigarro u otros?</span>
+        <div class="chip-group">
+          <input type="checkbox" id="v1" value="Fumo cigarrillos / Smoke cigarettes"/><label for="v1" data-es="Fumo" data-en="Smoke">Fumo</label>
+          <input type="checkbox" id="v2" value="Bebo alcohol ocasionalmente / Drink alcohol occasionally"/><label for="v2" data-es="Alcohol ocasional" data-en="Drink occasionally">Alcohol ocasional</label>
+          <input type="checkbox" id="v3" value="Bebo alcohol con frecuencia / Drink alcohol frequently"/><label for="v3" data-es="Alcohol frecuente" data-en="Drink frequently">Alcohol frecuente</label>
+          <input type="checkbox" id="v4" value="Ninguno / None"/><label for="v4" data-es="Ninguno" data-en="None">Ninguno</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Has intentado algún programa de fitness o dieta antes? ¿Qué resultados obtuviste?" data-en="Have you ever tried a fitness program or diet before? What were the results?">¿Has intentado algún programa de fitness o dieta antes? ¿Qué resultados obtuviste?</span>
+        <textarea id="q-past" data-label-es="Intentos anteriores de fitness o dieta" data-label-en="Previous fitness or diet attempts" placeholder="Ej. Intenté keto durante 3 meses, bajé 10 libras pero no lo pude mantener. Fui al gimnasio un año pero lo dejé por falta de tiempo…"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Qué fue lo que te detuvo o hizo que abandonaras en el pasado?" data-en="What stopped you or made you quit in the past?">¿Qué fue lo que te detuvo o hizo que abandonaras en el pasado?</span>
+        <div class="chip-group">
+          <input type="checkbox" id="ps1" value="Falta de tiempo / Lack of time"/><label for="ps1" data-es="Falta de tiempo" data-en="Lack of time">Falta de tiempo</label>
+          <input type="checkbox" id="ps2" value="Falta de motivación / Lack of motivation"/><label for="ps2" data-es="Falta de motivación" data-en="Lack of motivation">Falta de motivación</label>
+          <input type="checkbox" id="ps3" value="Los resultados llegaron muy despacio / Results came too slowly"/><label for="ps3" data-es="Resultados muy lentos" data-en="Results too slow">Resultados muy lentos</label>
+          <input type="checkbox" id="ps4" value="Una lesión o dolor / Injury or pain"/><label for="ps4" data-es="Lesión o dolor" data-en="Injury or pain">Lesión o dolor</label>
+          <input type="checkbox" id="ps5" value="El plan era demasiado complicado / The plan was too complicated"/><label for="ps5" data-es="Plan muy complicado" data-en="Too complicated">Plan muy complicado</label>
+          <input type="checkbox" id="ps6" value="La vida se interpuso / Life got in the way"/><label for="ps6" data-es="La vida se interpuso" data-en="Life got in the way">La vida se interpuso</label>
+          <input type="checkbox" id="ps7" value="Esta es mi primera vez intentándolo / This is my first time"/><label for="ps7" data-es="Primera vez" data-en="First time">Primera vez</label>
+        </div>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Tienes alguna condición médica o tomas algún medicamento que debamos considerar?" data-en="Do you have any medical conditions or take any medications we should consider?">¿Tienes alguna condición médica o tomas algún medicamento que debamos considerar?</span>
+        <textarea id="q-medical" data-label-es="Condiciones médicas o medicamentos" data-label-en="Medical conditions or medications" placeholder="Ej. Diabetes tipo 2, problemas de tiroides, medicamento para la presión arterial — o 'ninguno'"></textarea>
+      </div>
+      <div>
+        <span class="field-label" data-es="¿Cómo luce un día típico en tu vida? (horario de sueño, trabajo, comidas, tiempo libre)" data-en="What does a typical day in your life look like? (sleep schedule, work, meals, free time)">¿Cómo luce un día típico en tu vida? (horario de sueño, trabajo, comidas, tiempo libre)</span>
+        <textarea id="q-schedule" data-label-es="Horario típico del día" data-label-en="Typical daily schedule" placeholder="Ej. Me levanto a las 6 am, trabajo de 8 a 5 pm, voy al gimnasio después del trabajo, duermo a las 11 pm…"></textarea>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goPrev(8)" data-es="← Atrás" data-en="← Back">← Atrás</button>
+      <button class="btn-next" onclick="goNext(8)" data-es="Siguiente →" data-en="Next →">Siguiente →</button>
+      <button class="btn-skip" onclick="skipStep(8)" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step-9">
+    <div class="step-meta" data-es="Paso 9 de 9 — Última Pregunta" data-en="Step 9 of 9 — Final Question">Paso 9 de 9 — Última Pregunta</div>
+    <div class="step-question" data-es="¿Hay algo más que debamos saber sobre ti?" data-en="Is there anything else we should know about you?">¿Hay algo más que debamos saber sobre ti?</div>
+    <div class="step-hint" data-es="Aquí puedes agregar cualquier información adicional que creas importante. No hay límite — cuéntanos todo lo que quieras." data-en="Here you can add any additional information you think is important. There is no limit — tell us whatever you want.">Aquí puedes agregar cualquier información adicional que creas importante. No hay límite — cuéntanos todo lo que quieras.</div>
+    <div class="field-group">
+      <div>
+        <span class="field-label" data-es="¿Hay algo más que quieras agregar o que consideres importante que sepamos?" data-en="Is there anything else you want to add or that you think is important for us to know?">¿Hay algo más que quieras agregar o que consideres importante que sepamos?</span>
+        <textarea id="q-extra" data-label-es="Información adicional" data-label-en="Additional information" style="min-height:140px;" placeholder="Ej. Viajo mucho por trabajo, tengo hijos pequeños y poco tiempo, trabajo de noche, estoy pasando por un momento difícil en mi vida personal…"></textarea>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goPrev(9)" data-es="← Atrás" data-en="← Back">← Atrás</button>
+      <button class="btn-next" onclick="goToReview()" data-es="Ver resumen →" data-en="See summary →">Ver resumen →</button>
+      <button class="btn-skip" onclick="goToReview()" data-es="Saltar" data-en="Skip">Saltar</button>
+    </div>
+  </div>
+
+</div><!-- /steps-wrap -->
+
+<!-- REVIEW PAGE -->
+<div id="review-page">
+  <div class="review-header">
+    <div class="review-icon">⚠️</div>
+    <div>
+      <h2 id="review-title" data-es="Dejaste algunas preguntas sin responder." data-en="You left some questions unanswered.">Dejaste algunas preguntas sin responder.</h2>
+      <p id="review-subtitle" data-es="Recuerda: entre más detallado seas, mejor será tu plan. Puedes regresar a responderlas o enviar el formulario tal como está." data-en="Remember: the more detail you provide, the better your plan will be. You can go back to answer them or submit the form as is.">Recuerda: entre más detallado seas, mejor será tu plan. Puedes regresar a responderlas o enviar el formulario tal como está.</p>
+    </div>
+  </div>
+  <div class="skipped-list" id="skipped-list"></div>
+  <div class="review-actions">
+    <button class="back-to-form" onclick="backToForm()" data-es="← Regresar al formulario" data-en="← Back to form">← Regresar al formulario</button>
+    <button class="submit-anyway" onclick="submitForm()" id="submit-btn" data-es="Enviar así ✓" data-en="Submit as is ✓">Enviar así ✓</button>
+  </div>
+  <div class="err-submit" id="err-submit" data-es="Algo salió mal. Por favor intenta de nuevo." data-en="Something went wrong. Please try again.">Algo salió mal. Por favor intenta de nuevo.</div>
+</div>
+
+<!-- THANK YOU -->
+<div id="thankyou">
+  <div class="ty-icon">✓</div>
+  <h2 data-es="¡Listo! Lo recibimos." data-en="Done! We got it.">¡Listo! Lo recibimos.</h2>
+  <p data-es="Gracias por tomarte el tiempo de completar este formulario. Revisaremos tu información con cuidado y nos comunicaremos contigo pronto con tu plan personalizado." data-en="Thank you for taking the time to complete this form. We will carefully review your information and get back to you soon with your personalized plan.">Gracias por tomarte el tiempo de completar este formulario. Revisaremos tu información con cuidado y nos comunicaremos contigo pronto con tu plan personalizado.</p>
+</div>
+
+<script>
+const TOTAL = 9;
+let current = 1;
+let lang = 'es';
+let skippedSteps = new Set();
+
+// ── LANG ──
+function toggleLang() {
+  lang = lang === 'es' ? 'en' : 'es';
+  document.getElementById('lang-btn').textContent = lang === 'es' ? '🌐 English' : '🌐 Español';
+  applyLang();
+}
+function applyLang() {
+  document.querySelectorAll('[data-es]').forEach(el => {
+    const v = el.getAttribute('data-' + lang);
+    if (!v) return;
+    if (el.tagName === 'BUTTON' || el.tagName === 'SPAN' || el.tagName === 'DIV' || el.tagName === 'P' || el.tagName === 'H2') {
+      el.innerHTML = v;
+    } else if (el.tagName === 'INPUT' && el.type !== 'radio' && el.type !== 'checkbox') {
+      el.placeholder = v;
+    } else if (el.tagName === 'TEXTAREA') {
+      // don't override placeholder with translation here
+    }
+  });
+}
+
+// ── PROGRESS ──
+function updateProgress() {
+  const pct = Math.round(((current - 1) / TOTAL) * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('step-counter').textContent = current + ' / ' + TOTAL;
+}
+
+// ── START ──
+function startForm() {
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('steps-wrap').style.display = 'block';
+  document.getElementById('step-counter').style.display = 'inline';
+  document.getElementById('prog-pct').style.display = 'block';
+  showStep(1);
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  current = n;
+  updateProgress();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── NAV ──
+function goNext(n) {
+  skippedSteps.delete(n);
+  if (n < TOTAL) showStep(n + 1);
+}
+function goPrev(n) {
+  if (n > 1) showStep(n - 1);
+}
+function skipStep(n) {
+  skippedSteps.add(n);
+  if (n < TOTAL) showStep(n + 1);
+  else goToReview();
+}
+
+// ── HELPERS ──
+function v(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  return el.value.trim() || null;
+}
+function getRadio(name) {
+  const el = document.querySelector('input[name="' + name + '"]:checked');
+  return el ? el.value : null;
+}
+function getCheckboxes(...ids) {
+  const checked = ids.filter(id => { const el = document.getElementById(id); return el && el.checked; });
+  return checked.length ? checked.map(id => document.getElementById(id).value).join(', ') : null;
+}
+
+// ── DETECT SKIPPED FIELDS ──
+const allFields = [
+  { label_es: 'Nombre completo', label_en: 'Full name', step: 1, check: () => v('q-name') },
+  { label_es: 'Teléfono / WhatsApp', label_en: 'Phone / WhatsApp', step: 1, check: () => v('q-phone') },
+  { label_es: 'Edad', label_en: 'Age', step: 2, check: () => v('q-age') },
+  { label_es: 'Sexo biológico', label_en: 'Biological sex', step: 2, check: () => v('q-sex') },
+  { label_es: 'Altura', label_en: 'Height', step: 2, check: () => v('q-height') },
+  { label_es: 'Peso actual', label_en: 'Current weight', step: 2, check: () => v('q-weight') },
+  { label_es: 'Meta principal', label_en: 'Primary goal', step: 3, check: () => getRadio('goal') },
+  { label_es: 'Por qué quieres mejorar tu salud', label_en: 'Why you want to improve your health', step: 3, check: () => v('q-why') },
+  { label_es: 'Visión de éxito en 90 días', label_en: '90-day vision of success', step: 3, check: () => v('q-success') },
+  { label_es: 'Compromiso a largo plazo', label_en: 'Long-term commitment', step: 4, check: () => getRadio('commit') },
+  { label_es: 'Mayor miedo o preocupación', label_en: 'Biggest fear or concern', step: 4, check: () => v('q-fear') },
+  { label_es: 'Experiencia de entrenamiento', label_en: 'Training experience', step: 5, check: () => getRadio('exp') },
+  { label_es: 'Días de entrenamiento por semana', label_en: 'Training days per week', step: 5, check: () => getRadio('days') },
+  { label_es: 'Duración de cada sesión', label_en: 'Session duration', step: 5, check: () => getRadio('duration') },
+  { label_es: 'Ejercicios que disfruta', label_en: 'Exercises enjoyed', step: 5, check: () => v('q-exlove') },
+  { label_es: 'Ejercicios que quiere evitar', label_en: 'Exercises to avoid', step: 5, check: () => v('q-exhate') },
+  { label_es: 'Lesiones o limitaciones físicas', label_en: 'Injuries or physical limitations', step: 5, check: () => v('q-injury') },
+  { label_es: 'Hábitos alimenticios actuales', label_en: 'Current eating habits', step: 6, check: () => getRadio('diethabit') },
+  { label_es: 'Alimentos favoritos', label_en: 'Favorite foods', step: 6, check: () => v('q-foodlove') },
+  { label_es: 'Alimentos que no come', label_en: 'Foods they will not eat', step: 6, check: () => v('q-foodhate') },
+  { label_es: 'Cuántas veces come al día', label_en: 'How many times they eat per day', step: 6, check: () => getRadio('meals') },
+  { label_es: 'Cocina en casa o come fuera', label_en: 'Cooks at home or eats out', step: 6, check: () => getRadio('cooking') },
+  { label_es: 'Tiempo de preparación de comida', label_en: 'Meal preparation time', step: 6, check: () => getRadio('preptime') },
+  { label_es: 'Presupuesto semanal de comida', label_en: 'Weekly food budget', step: 7, check: () => getRadio('foodbudget') },
+  { label_es: 'Presupuesto mensual de suplementos', label_en: 'Monthly supplement budget', step: 7, check: () => getRadio('suppbudget') },
+  { label_es: 'Cómo manejará las comidas día a día', label_en: 'How they will handle meals day to day', step: 7, check: () => getRadio('mealapproach') },
+  { label_es: 'Tipo de trabajo', label_en: 'Type of work', step: 8, check: () => getRadio('job') },
+  { label_es: 'Horas de sueño por noche', label_en: 'Hours of sleep per night', step: 8, check: () => getRadio('sleep') },
+  { label_es: 'Consumo de agua diario', label_en: 'Daily water intake', step: 8, check: () => getRadio('water') },
+  { label_es: 'Horario típico del día', label_en: 'Typical daily schedule', step: 8, check: () => v('q-schedule') },
+];
+
+function getSkippedFields() {
+  return allFields.filter(f => !f.check());
+}
+
+// ── REVIEW ──
+function goToReview() {
+  const skipped = getSkippedFields();
+  if (skipped.length === 0) {
+    submitForm();
+    return;
+  }
+
+  document.getElementById('steps-wrap').style.display = 'none';
+  const reviewPage = document.getElementById('review-page');
+  reviewPage.style.display = 'block';
+
+  const list = document.getElementById('skipped-list');
+  list.innerHTML = '';
+  skipped.forEach(f => {
+    const stepLabel = lang === 'es' ? 'Paso ' + f.step : 'Step ' + f.step;
+    const fieldLabel = lang === 'es' ? f.label_es : f.label_en;
+    const item = document.createElement('div');
+    item.className = 'skipped-item';
+    item.innerHTML = `
+      <span class="skipped-item-label">${fieldLabel}</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="skipped-item-step">${stepLabel}</span>
+        <button class="go-back-btn" onclick="goBackToStep(${f.step})" data-es="Responder" data-en="Answer">${lang === 'es' ? 'Responder' : 'Answer'}</button>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+
+  document.getElementById('prog').style.width = '95%';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function goBackToStep(n) {
+  document.getElementById('review-page').style.display = 'none';
+  document.getElementById('steps-wrap').style.display = 'block';
+  showStep(n);
+}
+
+function backToForm() {
+  document.getElementById('review-page').style.display = 'none';
+  document.getElementById('steps-wrap').style.display = 'block';
+  showStep(current);
+}
+
+// ── BUILD SUMMARY ──
+function buildSummary() {
+  const obstacles = getCheckboxes('ob1','ob2','ob3','ob4','ob5','ob6','ob7') || '—';
+  const accountability = getCheckboxes('ac1','ac2','ac3','ac4','ac5') || '—';
+  const equipment = getCheckboxes('eq1','eq2','eq3','eq4','eq5','eq6') || '—';
+  const vices = getCheckboxes('v1','v2','v3','v4') || '—';
+  const pastStop = getCheckboxes('ps1','ps2','ps3','ps4','ps5','ps6','ps7') || '—';
+
+  const n = (id) => v(id) || '—';
+  const r = (name) => getRadio(name) || '—';
+
+  return `
+════════════════════════════════════════
+LIFESTYLE101 — RESUMEN DEL CLIENTE
+════════════════════════════════════════
+
+👤 CONTACTO E INFORMACIÓN PERSONAL
+──────────────────────────────────────
+Nombre:                ${n('q-name')}
+Teléfono / WhatsApp:   ${n('q-phone')}
+Correo electrónico:    ${n('q-email')}
+Edad:                  ${n('q-age')}
+Sexo biológico:        ${n('q-sex')}
+Altura:                ${n('q-height')}
+Peso actual:           ${n('q-weight')}
+Peso meta:             ${n('q-goalweight')}
+
+🎯 META Y MOTIVACIÓN
+──────────────────────────────────────
+Meta principal:        ${r('goal')}
+Por qué quiere cambiar:${n('q-why')}
+Visión en 90 días:     ${n('q-success')}
+¿Largo plazo o rápido?:${r('quickfix')}
+
+🧠 MENTALIDAD Y COMPROMISO
+──────────────────────────────────────
+Nivel de motivación:   ${document.getElementById('q-motivation').value}/10
+Compromiso:            ${r('commit')}
+Obstáculos percibidos: ${obstacles}
+Mayor miedo:           ${n('q-fear')}
+Prefiere accountability:${accountability}
+
+💪 ENTRENAMIENTO
+──────────────────────────────────────
+Experiencia:           ${r('exp')}
+Días por semana:       ${r('days')}
+Duración por sesión:   ${r('duration')}
+Acceso a gimnasio:     ${r('gym')}
+Equipo disponible:     ${equipment}
+Ejercicios que disfruta:${n('q-exlove')}
+Ejercicios que evita:  ${n('q-exhate')}
+Lesiones / Limitaciones:${n('q-injury')}
+
+🥩 NUTRICIÓN ACTUAL
+──────────────────────────────────────
+H�bitos actuales:      ${r('diethabit')}
+Alimentos favoritos:   ${n('q-foodlove')}
+Alimentos que evita:   ${n('q-foodhate')}
+Alergias / Restricciones:${n('q-allergy')}
+Comidas por día:       ${r('meals')}
+¿Cocina o come fuera?: ${r('cooking')}
+Tiempo de preparación: ${r('preptime')}
+Alimentos de consumo diario:${n('q-staple')}
+
+💰 PRESUPUESTO
+──────────────────────────────────────
+Presupuesto comida/semana:${r('foodbudget')}
+Presupuesto suplementos/mes:${r('suppbudget')}
+Cómo manejará las comidas:${r('mealapproach')}
+Acceso a cocina:       ${r('kitchen')}
+¿Registrará calorías/macros?:${r('tracking')}
+Suplementos actuales:  ${n('q-supps')}
+
+🌙 ESTILO DE VIDA E HISTORIAL
+──────────────────────────────────────
+Tipo de trabajo:       ${r('job')}
+Horas de sueño:        ${r('sleep')}
+Nivel de estrés:       ${document.getElementById('q-stress').value}/10
+Consumo de agua:       ${r('water')}
+Vicios:                ${vices}
+Intentos anteriores:   ${n('q-past')}
+Qué lo detuvo antes:   ${pastStop}
+Condiciones médicas:   ${n('q-medical')}
+Horario típico del día:${n('q-schedule')}
+
+💬 INFORMACIÓN ADICIONAL
+──────────────────────────────────────
+Notas extra:           ${n('q-extra')}
+
+════════════════════════════════════════
+  `.trim();
+}
+
+// ── SUBMIT ──
+async function submitForm() {
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = lang === 'es' ? 'Enviando…' : 'Sending…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://formspree.io/f/mlgyleea', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({
+        nombre: v('q-name') || '—',
+        telefono: v('q-phone') || '—',
+        email: v('q-email') || '—',
+        resumen_completo: buildSummary()
+      })
+    });
+
+    if (res.ok) {
+      document.getElementById('review-page').style.display = 'none';
+      document.getElementById('steps-wrap').style.display = 'none';
+      document.getElementById('thankyou').style.display = 'block';
+      document.getElementById('prog').style.width = '100%';
+      document.getElementById('prog-pct').textContent = '100%';
+      applyLang();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    } else {
+      throw new Error('Failed');
+    }
+  } catch(e) {
+    const err = document.getElementById('err-submit');
+    err.style.display = 'block';
+    btn.textContent = lang === 'es' ? 'Enviar así ✓' : 'Submit as is ✓';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
