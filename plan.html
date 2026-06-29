@@ -244,6 +244,12 @@ function renderProfile(data) {
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = String(s ?? '');
+  return d.innerHTML;
+}
+
 function renderList(id, items, defaultIcon) {
   const el = document.getElementById(id);
   if (!items.length) {
@@ -252,14 +258,14 @@ function renderList(id, items, defaultIcon) {
   }
   el.innerHTML = items.map(item => {
     if (typeof item === 'string') {
-      return `<div class="item"><div class="item-icon">${defaultIcon}</div><div class="item-text">${item}</div></div>`;
+      return `<div class="item"><div class="item-icon">${defaultIcon}</div><div class="item-text">${esc(item)}</div></div>`;
     }
     return `
       <div class="item">
-        <div class="item-icon">${item.icon || defaultIcon}</div>
+        <div class="item-icon">${esc(item.icon || defaultIcon)}</div>
         <div class="item-text">
-          <strong>${item.name || ''}</strong>
-          ${item.why ? `<span>${item.why}</span>` : ''}
+          <strong>${esc(item.name)}</strong>
+          ${item.why ? `<span>${esc(item.why)}</span>` : ''}
         </div>
       </div>`;
   }).join('');

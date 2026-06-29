@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -13,9 +14,16 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
-  // Admin password check
-  const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'lifestyle101admin';
-  if (body.adminPassword !== ADMIN_PASS) {
+  // Admin password check — fail closed if env var is not set
+  const ADMIN_PASS = process.env.ADMIN_PASSWORD;
+  if (!ADMIN_PASS) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'Server misconfigured' }) };
+  }
+  const provided = body.adminPassword || '';
+  // Constant-time comparison to prevent timing-based enumeration
+  const a = Buffer.from(provided.padEnd(ADMIN_PASS.length));
+  const b = Buffer.from(ADMIN_PASS);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
     return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized' }) };
   }
 

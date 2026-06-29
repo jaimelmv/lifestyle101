@@ -243,6 +243,12 @@ function saveClients(clients) {
   localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
 }
 
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = String(s ?? '');
+  return d.innerHTML;
+}
+
 // ── CLIENT LIST ──
 function renderClientList() {
   const clients = getClients();
@@ -258,15 +264,15 @@ function renderClientList() {
     const c = clients[code];
     const date = c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('es', {day:'numeric',month:'short',year:'numeric'}) : '';
     return `
-      <div class="client-card" onclick="openEditor('${code}')">
+      <div class="client-card" onclick="openEditor('${esc(code)}')">
         <div class="client-card-info">
-          <div class="client-card-name">${c.name || '(sin nombre)'}</div>
-          <div class="client-card-code">Código: ${code}</div>
+          <div class="client-card-name">${esc(c.name) || '(sin nombre)'}</div>
+          <div class="client-card-code">Código: ${esc(code)}</div>
           ${date ? `<div class="client-card-meta">Actualizado: ${date}</div>` : ''}
         </div>
         <div class="client-card-actions" onclick="event.stopPropagation()">
-          <button class="btn-ghost btn-sm" onclick="copyClientLink('${code}')">Copiar enlace</button>
-          <button class="btn btn-sm" onclick="openEditor('${code}')">Editar</button>
+          <button class="btn-ghost btn-sm" onclick="copyClientLink('${esc(code)}')">Copiar enlace</button>
+          <button class="btn btn-sm" onclick="openEditor('${esc(code)}')">Editar</button>
         </div>
       </div>`;
   }).join('')}</div>`;
