@@ -923,9 +923,18 @@ function buildSummary() {
   const n = (id) => v(id) || '—';
   const r = (name) => getRadio(name) || '—';
 
+  const skipped = getSkippedFields();
+  const skippedSection = skipped.length === 0
+    ? '✅ El usuario respondió todas las preguntas.'
+    : '⚠️ PREGUNTAS SIN RESPONDER:\n' + skipped.map(f => `- ${f.label_es} (Paso ${f.step})`).join('\n');
+
   return `
 ════════════════════════════════════════
 LIFESTYLE101 — RESUMEN DEL CLIENTE
+════════════════════════════════════════
+
+${skippedSection}
+
 ════════════════════════════════════════
 
 👤 CONTACTO E INFORMACIÓN PERSONAL
