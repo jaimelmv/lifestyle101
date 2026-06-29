@@ -106,6 +106,46 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 .start-btn:hover{opacity:0.88;}
 .start-btn:active{transform:scale(0.98);}
 
+/* ── CLIENT LOGIN LINK ── */
+.client-login-link{margin-top:20px;font-size:13px;color:var(--muted);}
+.client-login-link button{background:none;border:none;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;padding:0;font-family:var(--font-body);}
+.client-login-link button:hover{opacity:0.75;}
+
+/* ── CLIENT LOGIN MODAL ── */
+.client-modal-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:24px;
+}
+.client-modal{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:40px 36px;max-width:400px;width:100%;text-align:center;position:relative;
+  animation:fadeUp 0.22s ease;
+}
+.client-modal-icon{font-size:36px;margin-bottom:14px;}
+.client-modal h2{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:8px;}
+.client-modal p{color:var(--muted);font-size:13px;margin-bottom:24px;}
+.client-modal-input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:14px 18px;font-size:17px;font-weight:600;color:var(--text);font-family:var(--font-display);
+  text-align:center;outline:none;transition:border-color 0.2s;margin-bottom:14px;
+}
+.client-modal-input:focus{border-color:var(--accent);}
+.client-modal-input::placeholder{font-size:13px;font-weight:400;color:var(--muted);}
+.client-modal-btn{
+  width:100%;background:var(--accent);color:#fff;
+  font-family:var(--font-display);font-size:15px;font-weight:800;
+  border:none;border-radius:99px;padding:15px;cursor:pointer;transition:opacity 0.15s;
+}
+.client-modal-btn:hover{opacity:0.88;}
+.client-modal-error{color:var(--accent);font-size:13px;margin-top:12px;display:none;}
+.client-modal-close{
+  position:absolute;top:14px;right:14px;background:none;border:none;
+  color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:4px 8px;
+  border-radius:6px;
+}
+.client-modal-close:hover{color:var(--text);}
+
 /* ── STEPS ── */
 .steps-wrap{display:none;max-width:620px;margin:0 auto;padding:100px 24px 80px;min-height:100vh;}
 .step{display:none;}
@@ -292,6 +332,10 @@ textarea{resize:vertical;min-height:100px;}
   <h1><span data-es="Empieza aquí." data-en="Start here.">Empieza aquí.</span><br><span style="color:var(--accent)" data-es="Cuéntanos todo." data-en="Tell us everything.">Cuéntanos todo.</span></h1>
   <p data-es="Este formulario nos ayuda a entender exactamente dónde estás para poder construir un plan hecho solo para ti. Sé honesto — no hay respuestas incorrectas. Puedes saltarte cualquier pregunta, pero recuerda: entre más detallado seas, mejor será tu plan." data-en="This form helps us understand exactly where you are so we can build a plan made just for you. Be honest — there are no wrong answers. You can skip any question, but remember: the more detail you give, the better your plan will be.">Este formulario nos ayuda a entender exactamente dónde estás para poder construir un plan hecho solo para ti. Sé honesto — no hay respuestas incorrectas. Puedes saltarte cualquier pregunta, pero recuerda: entre más detallado seas, mejor será tu plan.</p>
   <button class="start-btn" onclick="startForm()" data-es="Comenzar →" data-en="Get Started →">Comenzar →</button>
+  <div class="client-login-link">
+    <span data-es="¿Ya eres cliente?" data-en="Already a client?">¿Ya eres cliente?</span>
+    <button onclick="openClientLogin()" data-es=" Accede a tu plan →" data-en=" View your plan →"> Accede a tu plan →</button>
+  </div>
   <div class="resume-banner" id="resume-banner">
     <div class="resume-banner-text">
       <strong data-es="Tienes progreso guardado" data-en="You have saved progress">Tienes progreso guardado</strong>
@@ -1284,7 +1328,52 @@ document.addEventListener('DOMContentLoaded', () => {
   // auto-save on any input change
   document.getElementById('steps-wrap').addEventListener('input', saveProgress);
   document.getElementById('steps-wrap').addEventListener('change', saveProgress);
+
+  // ── CLIENT LOGIN MODAL ──
+  const overlay = document.getElementById('client-modal-overlay');
+  const nameInput = document.getElementById('client-name-input');
+  const errEl = document.getElementById('client-modal-error');
+
+  document.getElementById('client-modal-close-btn').addEventListener('click', closeClientLogin);
+  document.getElementById('client-modal-submit-btn').addEventListener('click', submitClientLogin);
+  nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitClientLogin(); });
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeClientLogin(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeClientLogin(); });
 });
+
+function openClientLogin() {
+  const overlay = document.getElementById('client-modal-overlay');
+  overlay.style.display = 'flex';
+  const nameInput = document.getElementById('client-name-input');
+  nameInput.value = '';
+  document.getElementById('client-modal-error').style.display = 'none';
+  setTimeout(() => nameInput.focus(), 60);
+}
+
+function closeClientLogin() {
+  document.getElementById('client-modal-overlay').style.display = 'none';
+}
+
+function submitClientLogin() {
+  const nameInput = document.getElementById('client-name-input');
+  const errEl = document.getElementById('client-modal-error');
+  const name = nameInput.value.trim().toUpperCase();
+  if (!name) {
+    errEl.textContent = lang === 'en' ? 'Please enter your name.' : 'Por favor ingresa tu nombre.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  fetch(`/clients/${name}.json`)
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(() => { window.location.href = `/plan?code=${name}`; })
+    .catch(() => {
+      errEl.textContent = lang === 'en'
+        ? 'No plan found for that name. Check your name and try again.'
+        : 'No encontramos un plan con ese nombre. Verifica e intenta de nuevo.';
+      errEl.style.display = 'block';
+    });
+}
 </script>
 
 <!-- Formspree Ajax SDK -->
@@ -1301,6 +1390,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 </script>
+<!-- CLIENT LOGIN MODAL -->
+<div class="client-modal-overlay" id="client-modal-overlay">
+  <div class="client-modal">
+    <button class="client-modal-close" id="client-modal-close-btn">✕</button>
+    <div class="client-modal-icon">🔑</div>
+    <h2 data-es="Accede a tu plan" data-en="View your plan">Accede a tu plan</h2>
+    <p data-es="Ingresa tu nombre para ver tu plan personalizado." data-en="Enter your name to view your personalized plan.">Ingresa tu nombre para ver tu plan personalizado.</p>
+    <input class="client-modal-input" id="client-name-input" type="text"
+      placeholder="Tu nombre (ej. Felix)" maxlength="30"/>
+    <button class="client-modal-btn" id="client-modal-submit-btn"
+      data-es="Ver mi plan →" data-en="View my plan →">Ver mi plan →</button>
+    <div class="client-modal-error" id="client-modal-error"></div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/@formspree/ajax@1.1.5/dist/global.js"
   integrity="sha384-9fQrvHz7unHjhv7e+pJqhvNxPV4tYHHsSn3PxBIEyPTGY8Q/PAKM1sfhL+zTYmhc"
   crossorigin="anonymous" defer
