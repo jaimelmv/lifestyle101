@@ -51,16 +51,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 /* ── PROGRESS BAR ── */
 .progress-bar{
   position:fixed;top:53px;left:0;right:0;
-  height:3px;background:var(--border);z-index:99;
+  height:2px;background:var(--border);z-index:99;
 }
 .progress-fill{
   height:100%;background:var(--accent);
   transition:width 0.45s cubic-bezier(.4,0,.2,1);width:0%;
 }
 .progress-pct{
-  position:fixed;top:58px;right:24px;
-  font-size:11px;color:var(--accent);z-index:99;
-  font-weight:700;letter-spacing:0.08em;
+  display:none;
+}
+/* ── PROGRESS WIDGET ── */
+.progress-widget{
+  position:fixed;bottom:28px;right:24px;z-index:100;
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+}
+.progress-widget-pct{
+  font-family:var(--font-display);font-size:22px;font-weight:800;
+  color:var(--accent);line-height:1;
+}
+.progress-widget-bar{
+  width:120px;height:6px;background:var(--border);border-radius:99px;overflow:hidden;
+}
+.progress-widget-fill{
+  height:100%;background:var(--accent);border-radius:99px;
+  transition:width 0.45s cubic-bezier(.4,0,.2,1);width:0%;
 }
 
 /* ── HERO ── */
@@ -220,6 +234,10 @@ textarea{resize:vertical;min-height:100px;}
 </div>
 <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
 <div class="progress-pct" id="prog-pct" style="display:none"></div>
+<div class="progress-widget" id="progress-widget" style="display:none">
+  <div class="progress-widget-pct" id="widget-pct">0%</div>
+  <div class="progress-widget-bar"><div class="progress-widget-fill" id="widget-fill"></div></div>
+</div>
 
 <!-- HERO -->
 <div class="hero" id="hero">
@@ -761,6 +779,8 @@ function updateProgress() {
   document.getElementById('prog').style.width = pct + '%';
   document.getElementById('prog-pct').textContent = pct + '%';
   document.getElementById('step-counter').textContent = current + ' / ' + TOTAL;
+  document.getElementById('widget-pct').textContent = pct + '%';
+  document.getElementById('widget-fill').style.width = pct + '%';
 }
 
 // ── START ──
@@ -768,7 +788,7 @@ function startForm() {
   document.getElementById('hero').style.display = 'none';
   document.getElementById('steps-wrap').style.display = 'block';
   document.getElementById('step-counter').style.display = 'inline';
-  document.getElementById('prog-pct').style.display = 'block';
+  document.getElementById('progress-widget').style.display = 'flex';
   showStep(1);
 }
 
