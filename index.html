@@ -845,23 +845,44 @@ function updateProgress() {
 // ── START ──
 function startForm() {
   document.getElementById('hero').style.display = 'none';
+  document.getElementById('resume-banner').style.display = 'none';
   document.getElementById('steps-wrap').style.display = 'block';
   document.getElementById('step-counter').style.display = 'inline';
   document.getElementById('progress-widget').style.display = 'flex';
   cameFromReview = false;
   document.getElementById('quick-submit').style.display = 'none';
+  // if saved progress exists, restore answers and resume at saved step
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data.step) { restoreAnswers(data); showStep(data.step); return; }
+    }
+  } catch(e) {}
   showStep(1);
 }
 
 function logoClick() {
   const hero = document.getElementById('hero');
   if (hero.style.display !== 'none') { window.scrollTo({top:0,behavior:'smooth'}); return; }
-  document.getElementById('steps-wrap').style.display = 'block';
+  // go back to hero, keeping all answers in localStorage intact
+  document.getElementById('steps-wrap').style.display = 'none';
   document.getElementById('review-page').style.display = 'none';
   document.getElementById('thankyou').style.display = 'none';
-  cameFromReview = false;
+  document.getElementById('progress-widget').style.display = 'none';
+  document.getElementById('step-counter').style.display = 'none';
   document.getElementById('quick-submit').style.display = 'none';
-  showStep(1);
+  cameFromReview = false;
+  hero.style.display = 'block';
+  // show resume banner if there's saved progress
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data.step) document.getElementById('resume-banner').style.display = 'flex';
+    }
+  } catch(e) {}
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function showStep(n) {
