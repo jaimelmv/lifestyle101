@@ -784,7 +784,7 @@ textarea{resize:vertical;min-height:100px;}
 <!-- REVIEW PAGE -->
 <div id="review-page">
   <div class="review-header">
-    <div class="review-icon">⚠️</div>
+    <div class="review-icon" id="review-icon">⚠️</div>
     <div>
       <h2 id="review-title" data-es="Dejaste algunas preguntas sin responder." data-en="You left some questions unanswered.">Dejaste algunas preguntas sin responder.</h2>
       <p id="review-subtitle" data-es="Recuerda: entre más detallado seas, mejor será tu plan. Puedes regresar a responderlas o enviar el formulario tal como está." data-en="Remember: the more detail you provide, the better your plan will be. You can go back to answer them or submit the form as is.">Recuerda: entre más detallado seas, mejor será tu plan. Puedes regresar a responderlas o enviar el formulario tal como está.</p>
@@ -966,10 +966,6 @@ function getSkippedFields() {
 // ── REVIEW ──
 function goToReview() {
   const skipped = getSkippedFields();
-  if (skipped.length === 0) {
-    submitForm();
-    return;
-  }
 
   document.getElementById('steps-wrap').style.display = 'none';
   document.getElementById('quick-submit').style.display = 'none';
@@ -977,22 +973,48 @@ function goToReview() {
   const reviewPage = document.getElementById('review-page');
   reviewPage.style.display = 'block';
 
+  const title = document.getElementById('review-title');
+  const subtitle = document.getElementById('review-subtitle');
   const list = document.getElementById('skipped-list');
   list.innerHTML = '';
-  skipped.forEach(f => {
-    const stepLabel = lang === 'es' ? 'Paso ' + f.step : 'Step ' + f.step;
-    const fieldLabel = lang === 'es' ? f.label_es : f.label_en;
-    const item = document.createElement('div');
-    item.className = 'skipped-item';
-    item.innerHTML = `
-      <span class="skipped-item-label">${fieldLabel}</span>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="skipped-item-step">${stepLabel}</span>
-        <button class="go-back-btn" onclick="goBackToStep(${f.step})" data-es="Responder" data-en="Answer">${lang === 'es' ? 'Responder' : 'Answer'}</button>
-      </div>
-    `;
-    list.appendChild(item);
-  });
+
+  if (skipped.length === 0) {
+    // all answered — show a ready-to-submit message
+    title.setAttribute('data-es', '¡Todo listo para enviar!');
+    title.setAttribute('data-en', 'Ready to submit!');
+    title.textContent = lang === 'es' ? '¡Todo listo para enviar!' : 'Ready to submit!';
+    subtitle.setAttribute('data-es', 'Respondiste todas las preguntas. Revisa y envía tu formulario cuando estés listo.');
+    subtitle.setAttribute('data-en', 'You answered all the questions. Review and submit your form when ready.');
+    subtitle.textContent = lang === 'es'
+      ? 'Respondiste todas las preguntas. Revisa y envía tu formulario cuando estés listo.'
+      : 'You answered all the questions. Review and submit your form when ready.';
+    document.getElementById('review-icon') && (document.getElementById('review-icon').textContent = '✅');
+  } else {
+    // some skipped — show warning
+    title.setAttribute('data-es', 'Dejaste algunas preguntas sin responder.');
+    title.setAttribute('data-en', 'You left some questions unanswered.');
+    title.textContent = lang === 'es' ? 'Dejaste algunas preguntas sin responder.' : 'You left some questions unanswered.';
+    subtitle.setAttribute('data-es', 'Recuerda: entre más detallado seas, mejor será tu plan. Puedes regresar a responderlas o enviar el formulario tal como está.');
+    subtitle.setAttribute('data-en', 'Remember: the more detail you provide, the better your plan will be. You can go back to answer them or submit the form as is.');
+    subtitle.textContent = lang === 'es'
+      ? 'Recuerda: entre más detallado seas, mejor será tu plan. Puedes regresar a responderlas o enviar el formulario tal como está.'
+      : 'Remember: the more detail you provide, the better your plan will be. You can go back to answer them or submit the form as is.';
+    document.getElementById('review-icon') && (document.getElementById('review-icon').textContent = '⚠️');
+    skipped.forEach(f => {
+      const stepLabel = lang === 'es' ? 'Paso ' + f.step : 'Step ' + f.step;
+      const fieldLabel = lang === 'es' ? f.label_es : f.label_en;
+      const item = document.createElement('div');
+      item.className = 'skipped-item';
+      item.innerHTML = `
+        <span class="skipped-item-label">${fieldLabel}</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="skipped-item-step">${stepLabel}</span>
+          <button class="go-back-btn" onclick="goBackToStep(${f.step})" data-es="Responder" data-en="Answer">${lang === 'es' ? 'Responder' : 'Answer'}</button>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
 
   document.getElementById('prog').style.width = '95%';
   window.scrollTo({top: 0, behavior: 'smooth'});
