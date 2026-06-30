@@ -223,6 +223,97 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
   .footer-text a{color:#000 !important;}
   .section{break-inside:avoid;}
 }
+
+/* WORKOUT SECTION */
+.workout-section{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;margin-bottom:20px;
+  scroll-margin-top:108px;
+  display:none;
+}
+.workout-intro{
+  background:var(--surface2);border-radius:10px;padding:16px;
+  margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.7;
+}
+.workout-intro strong{color:var(--text);display:block;margin-bottom:4px;font-size:14px;}
+.warmup-box{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:20px;margin-bottom:20px;
+}
+.warmup-title{
+  font-family:var(--font-display);font-size:14px;font-weight:800;
+  margin-bottom:4px;
+}
+.warmup-desc{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.warmup-moves{display:flex;flex-direction:column;gap:8px;}
+.warmup-move{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:13px;line-height:1.5;
+}
+.warmup-move-icon{font-size:16px;flex-shrink:0;}
+.warmup-move-text strong{display:block;font-weight:600;font-size:13px;}
+.warmup-move-text span{color:var(--muted);font-size:12px;}
+.workout-days{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.day-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface2);border-radius:10px;
+  padding:14px 16px;cursor:pointer;user-select:none;
+  transition:opacity 0.15s,background 0.15s;
+}
+.day-row:hover{background:#23232b;}
+.day-row.rest-day{cursor:default;opacity:0.5;}
+.day-row.rest-day:hover{background:var(--surface2);}
+.day-badge{
+  font-family:var(--font-display);font-size:11px;font-weight:800;
+  color:var(--muted);min-width:44px;flex-shrink:0;
+}
+.day-label{font-size:14px;font-weight:500;flex:1;}
+.day-check{
+  margin-left:auto;flex-shrink:0;
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:transparent;
+  transition:background 0.15s,border-color 0.15s,color 0.15s;
+}
+.day-row.checked .day-label{text-decoration:line-through;opacity:0.5;}
+.day-row.checked .day-check{background:var(--accent);border-color:var(--accent);color:#fff;}
+.workout-progress{
+  background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:20px;
+}
+.progress-label{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;}
+.progress-bar-track{
+  height:6px;background:var(--border);border-radius:99px;overflow:hidden;
+}
+.progress-bar-fill{
+  height:100%;background:var(--accent);border-radius:99px;
+  transition:width 0.3s ease;width:0%;
+}
+.workout-rules{
+  background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:20px;
+}
+.workout-rules-title{
+  font-family:var(--font-display);font-size:13px;font-weight:800;
+  margin-bottom:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;
+}
+.workout-rules ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.workout-rules li{font-size:13px;color:var(--muted);padding-left:16px;position:relative;line-height:1.5;}
+.workout-rules li::before{content:'→';position:absolute;left:0;color:var(--accent);}
+.workout-why{
+  background:var(--accent-dim);border:1px solid var(--accent);
+  border-radius:10px;padding:16px;font-size:13px;
+  color:var(--muted);line-height:1.7;
+}
+.workout-why strong{color:var(--accent);display:block;margin-bottom:6px;font-size:14px;}
+
+/* Print workout */
+@media print{
+  .workout-section{display:block !important;}
+  .day-row{cursor:default;}
+  .day-check{display:none !important;}
+  .day-row.checked .day-label{text-decoration:none !important;opacity:1 !important;}
+  .progress-bar-track,.progress-bar-fill,.workout-progress{display:none !important;}
+}
 </style>
 </head>
 <body>
@@ -267,6 +358,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
     <span class="stat-pill">🛒 <strong id="stat-buy">0</strong> para comprar</span>
     <span class="stat-pill">🚫 <strong id="stat-stop">0</strong> para dejar</span>
     <span class="stat-pill">⭐ <strong id="stat-rec">0</strong> recom.</span>
+    <span class="stat-pill" id="stat-workout-pill" style="display:none">🚴 <strong id="stat-workout">14</strong> días</span>
   </div>
 
   <!-- STICKY SECTION NAV -->
@@ -275,6 +367,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
       <button class="nav-tab" data-target="sec-buy">🛒 Comprar</button>
       <button class="nav-tab" data-target="sec-stop">🚫 Dejar</button>
       <button class="nav-tab" data-target="sec-rec">⭐ Recom.</button>
+      <button class="nav-tab" data-target="sec-workout">🚴 Ejercicio</button>
       <button class="nav-tab" data-target="notes-section">📝 Notas</button>
     </div>
   </nav>
@@ -316,6 +409,60 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
       </div>
     </div>
     <div class="item-list" id="rec-list"></div>
+  </div>
+
+  <!-- WORKOUT SECTION -->
+  <div class="workout-section" id="sec-workout" style="display:none">
+    <div class="section-header">
+      <div class="section-icon">🚴</div>
+      <div>
+        <div class="section-title" id="workout-title">Programa de Ejercicio</div>
+        <div class="section-desc">Tu programa personalizado de 2 semanas</div>
+      </div>
+    </div>
+
+    <!-- Watch + Pace tips -->
+    <div class="workout-intro" id="workout-watch-tip" style="display:none">
+      <strong>⌚ Tu Apple Watch</strong>
+      <span id="workout-watch-text"></span>
+    </div>
+    <div class="workout-intro" id="workout-pace-tip" style="display:none">
+      <strong>🎯 Tu ritmo ideal</strong>
+      <span id="workout-pace-text"></span>
+    </div>
+
+    <!-- Warmup box -->
+    <div class="warmup-box" id="workout-warmup-box" style="display:none">
+      <div class="warmup-title" id="warmup-title"></div>
+      <div class="warmup-desc" id="warmup-desc"></div>
+      <div class="warmup-moves" id="warmup-moves"></div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="workout-progress" id="workout-progress" style="display:none">
+      <div class="progress-label">
+        <span>Tu progreso</span>
+        <span id="progress-fraction">0 / 0 días completados</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- Day rows -->
+    <div class="workout-days" id="workout-days"></div>
+
+    <!-- Rules -->
+    <div class="workout-rules" id="workout-rules-box" style="display:none">
+      <div class="workout-rules-title">Las reglas</div>
+      <ul id="workout-rules-list"></ul>
+    </div>
+
+    <!-- Why it works -->
+    <div class="workout-why" id="workout-why-box" style="display:none">
+      <strong>💡 Por qué esto funciona para ti</strong>
+      <span id="workout-why-text"></span>
+    </div>
   </div>
 
   <!-- NOTES -->
@@ -404,6 +551,7 @@ function renderProfile(data) {
   }
 
   setupChecklist();
+  renderWorkout(data.workout);
   setupNav(hasNotes);
 
   window.scrollTo({top: 0, behavior: 'smooth'});
@@ -523,6 +671,12 @@ function setupNav(hasNotes) {
 
   const notesTab = nav.querySelector('[data-target="notes-section"]');
   if (notesTab) notesTab.style.display = hasNotes ? '' : 'none';
+  const workoutTab = nav.querySelector('[data-target="sec-workout"]');
+  if (workoutTab) {
+    const hasWorkout = !!document.getElementById('sec-workout') &&
+      document.getElementById('sec-workout').style.display !== 'none';
+    workoutTab.style.display = hasWorkout ? '' : 'none';
+  }
 
   const tabs = [...nav.querySelectorAll('.nav-tab')];
   tabs.forEach(tab => {
@@ -548,6 +702,115 @@ function setupNav(hasNotes) {
     });
   }, { rootMargin: '-120px 0px -65% 0px', threshold: 0 });
   sections.forEach(s => navObserver.observe(s));
+}
+
+/* ── WORKOUT SECTION ── */
+function renderWorkout(w) {
+  if (!w) return;
+  const section = document.getElementById('sec-workout');
+  section.style.display = 'block';
+
+  // Title
+  if (w.title) document.getElementById('workout-title').textContent = w.title;
+
+  // Watch tip
+  if (w.watchTip) {
+    document.getElementById('workout-watch-text').textContent = w.watchTip;
+    document.getElementById('workout-watch-tip').style.display = 'block';
+  }
+
+  // Pace tip
+  if (w.paceTip) {
+    document.getElementById('workout-pace-text').textContent = w.paceTip;
+    document.getElementById('workout-pace-tip').style.display = 'block';
+  }
+
+  // Warmup
+  if (w.warmup) {
+    const box = document.getElementById('workout-warmup-box');
+    box.style.display = 'block';
+    document.getElementById('warmup-title').textContent = w.warmup.title || '';
+    document.getElementById('warmup-desc').textContent = w.warmup.description || '';
+    const movesEl = document.getElementById('warmup-moves');
+    movesEl.innerHTML = (w.warmup.moves || []).map(m => `
+      <div class="warmup-move">
+        <div class="warmup-move-icon">${esc(m.icon || '•')}</div>
+        <div class="warmup-move-text">
+          <strong>${esc(m.name)}</strong>
+          <span>${esc(m.desc)}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  // Days
+  const days = w.days || [];
+  const rideDays = days.filter(d => d.type === 'ride');
+  const daysEl = document.getElementById('workout-days');
+  const workoutKey = 'workout_' + planCode;
+
+  function getCheckedDays() {
+    try { return new Set(JSON.parse(localStorage.getItem(workoutKey) || '[]')); }
+    catch (e) { return new Set(); }
+  }
+  function saveCheckedDays(set) {
+    try { localStorage.setItem(workoutKey, JSON.stringify([...set])); } catch (e) {}
+  }
+  function updateProgress() {
+    const checked = getCheckedDays();
+    const completedRides = rideDays.filter(d => checked.has('day_' + d.day)).length;
+    const total = rideDays.length;
+    const pct = total ? Math.round((completedRides / total) * 100) : 0;
+    document.getElementById('progress-fraction').textContent = `${completedRides} / ${total} entrenamientos completados`;
+    document.getElementById('progress-bar-fill').style.width = pct + '%';
+  }
+
+  if (days.length) {
+    document.getElementById('workout-progress').style.display = 'block';
+    document.getElementById('stat-workout-pill').style.display = '';
+    document.getElementById('stat-workout').textContent = days.length;
+
+    const checked = getCheckedDays();
+    daysEl.innerHTML = days.map(d => {
+      const key = 'day_' + d.day;
+      const isRest = d.type === 'rest';
+      const isChecked = checked.has(key);
+      const warmupBadge = d.warmup ? '<span style="font-size:11px;color:var(--muted);margin-left:6px;">+ calentamiento</span>' : '';
+      return `
+        <div class="day-row${isRest ? ' rest-day' : ''}${isChecked ? ' checked' : ''}"
+             data-key="${key}" data-rest="${isRest}">
+          <div class="day-badge">Día ${d.day}</div>
+          <div class="day-label">${esc(d.label)}${warmupBadge}</div>
+          ${!isRest ? `<div class="day-check">✓</div>` : ''}
+        </div>`;
+    }).join('');
+
+    updateProgress();
+
+    daysEl.addEventListener('click', e => {
+      const row = e.target.closest('.day-row');
+      if (!row || row.dataset.rest === 'true') return;
+      const set = getCheckedDays();
+      const key = row.dataset.key;
+      if (row.classList.toggle('checked')) set.add(key);
+      else set.delete(key);
+      saveCheckedDays(set);
+      updateProgress();
+    });
+  }
+
+  // Rules
+  if (w.rules && w.rules.length) {
+    const rulesBox = document.getElementById('workout-rules-box');
+    rulesBox.style.display = 'block';
+    document.getElementById('workout-rules-list').innerHTML =
+      w.rules.map(r => `<li>${esc(r)}</li>`).join('');
+  }
+
+  // Why it works
+  if (w.whyItWorks) {
+    document.getElementById('workout-why-box').style.display = 'block';
+    document.getElementById('workout-why-text').textContent = w.whyItWorks;
+  }
 }
 
 // On load: wire buttons + check URL param

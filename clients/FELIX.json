@@ -27,5 +27,47 @@
     { "name": "Prioridad 2 — Consigue cuando puedas", "why": "Mantequilla grass-fed, hígado grass-fed, y miel cruda sin filtrar. Importantes pero si el presupuesto aprieta, la versión convencional sigue siendo buena." },
     { "name": "Prioridad 3 — No te estreses por esto", "why": "La calidad de la fruta. Compra orgánica si el presupuesto lo permite, pero la convencional es infinitamente mejor que el arroz o el pan." }
   ],
-  "notes": "Felix, el objetivo ahora mismo es simple — hacer el cambio. No tienes que ser perfecto desde el primer día. Reemplaza lo que puedes, compra con la mejor calidad que tu presupuesto permita, y ve mejorando con el tiempo.\n\nUna cosa más que no es negociable: el sueño. Estás durmiendo 5–6 horas por noche. Con tu peso, presión arterial alta y apnea del sueño, el mal sueño está trabajando activamente en contra de todo — pérdida de grasa, presión arterial, energía y hormonas. Trata de llegar a 7–8 horas. Esto es parte del protocolo.\n\nSi tienes preguntas, contáctame. Estoy aquí para ayudarte."
+  "notes": "Felix, el objetivo ahora mismo es simple — hacer el cambio. No tienes que ser perfecto desde el primer día. Reemplaza lo que puedes, compra con la mejor calidad que tu presupuesto permita, y ve mejorando con el tiempo.\n\nUna cosa más que no es negociable: el sueño. Estás durmiendo 5–6 horas por noche. Con tu peso, presión arterial alta y apnea del sueño, el mal sueño está trabajando activamente en contra de todo — pérdida de grasa, presión arterial, energía y hormonas. Trata de llegar a 7–8 horas. Esto es parte del protocolo.\n\nSi tienes preguntas, contáctame. Estoy aquí para ayudarte.",
+  "workout": {
+    "title": "Programa de 2 Semanas",
+    "subtitle": "Empieza aquí. Haz esto. Nada más.",
+    "warmup": {
+      "title": "Calentamiento — 5 Minutos",
+      "description": "Haz esto SIEMPRE antes de subirte a la bicicleta. De pie, sin piso, 5 minutos.",
+      "moves": [
+        { "icon": "🔄", "name": "Rolls de cuello", "desc": "Rueda tu cabeza lentamente en círculo, 5 veces hacia cada lado" },
+        { "icon": "🔄", "name": "Rolls de hombros", "desc": "Rueda ambos hombros hacia adelante 10 veces, luego hacia atrás 10 veces" },
+        { "icon": "🙌", "name": "Levantamiento de brazos", "desc": "Levanta ambos brazos rectos hacia arriba lentamente, luego bájalos, 10 veces" },
+        { "icon": "🔄", "name": "Círculos de cadera", "desc": "Manos en la cadera, rota tus caderas en un círculo grande, 10 veces hacia cada lado" },
+        { "icon": "🦵", "name": "Marcha de rodillas", "desc": "Levanta una rodilla lo más alto que puedas cómodamente, luego la otra, lento y controlado, 20 en total" },
+        { "icon": "↕️", "name": "Inclinaciones de torso", "desc": "Manos en la cadera, inclínate suavemente hacia adelante y hacia atrás, 10 veces lento" }
+      ]
+    },
+    "watchTip": "Cada vez que salgas: abre la app Workout → selecciona Outdoor Cycle o Indoor Cycle → presiona start. No lo detengas hasta terminar. Al final de los 14 días abre tu app Fitness y mira todo lo que construiste.",
+    "paceTip": "Tu ritmo ideal: pedalea a un ritmo donde puedas decir frases cortas pero no podrías cantar. Eso es la intensidad correcta para tu corazón ahora mismo.",
+    "days": [
+      { "day": 1, "type": "ride", "label": "🚴 Pedalea 15 min fácil", "warmup": true },
+      { "day": 2, "type": "rest", "label": "😴 Descanso", "warmup": false },
+      { "day": 3, "type": "ride", "label": "🚴 Pedalea 15 min fácil", "warmup": true },
+      { "day": 4, "type": "rest", "label": "😴 Descanso", "warmup": false },
+      { "day": 5, "type": "ride", "label": "🚴 Pedalea 20 min fácil", "warmup": true },
+      { "day": 6, "type": "ride", "label": "🚴 Pedalea 20 min fácil", "warmup": true },
+      { "day": 7, "type": "rest", "label": "😴 Descanso", "warmup": false },
+      { "day": 8, "type": "ride", "label": "🚴 Pedalea 20 min fácil", "warmup": true },
+      { "day": 9, "type": "rest", "label": "😴 Descanso", "warmup": false },
+      { "day": 10, "type": "ride", "label": "🚴 Pedalea 25 min fácil", "warmup": true },
+      { "day": 11, "type": "rest", "label": "😴 Descanso", "warmup": false },
+      { "day": 12, "type": "ride", "label": "🚴 Pedalea 25 min fácil", "warmup": true },
+      { "day": 13, "type": "ride", "label": "🚴 Pedalea 30 min fácil", "warmup": true },
+      { "day": 14, "type": "rest", "label": "😴 Descanso", "warmup": false }
+    ],
+    "rules": [
+      "Siempre haz el calentamiento antes de pedalear — sin excepciones",
+      "Nunca te saltes dos días seguidos",
+      "Ritmo fácil todo el tiempo — si te quedas sin aliento, reduce la velocidad",
+      "Registra cada sesión en tu Apple Watch",
+      "Completa los 14 días → escríbele a tu coach → construimos la siguiente fase"
+    ],
+    "whyItWorks": "Tienes presión arterial alta. Pedalear a un ritmo bajo y constante es una de las cosas más efectivas que puedes hacer para bajarla — más que la mayoría de los medicamentos cuando se hace con consistencia. Tu cuerpo no necesita intensidad ahora mismo. Necesita movimiento. Cada sesión hace tu corazón más fuerte y eficiente. En semanas tu presión empieza a responder. En un mes sentirás la diferencia."
+  }
 }
