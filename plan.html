@@ -209,7 +209,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
 /* PRINT */
 @media print{
   .topbar,.section-nav,.copy-btn,.contact-btn,.pdf-btn,
-  .check-badge,.loading-overlay,.code-wrap{display:none !important;}
+  .check-badge,.loading-overlay,.code-wrap,.checkin-section{display:none !important;}
   body{background:#fff !important;color:#000 !important;}
   .profile{display:block !important;padding:24px 0;max-width:100%;animation:none;}
   .section,.item,.stat-pill{
@@ -314,6 +314,49 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
   .day-row.checked .day-label{text-decoration:none !important;opacity:1 !important;}
   .progress-bar-track,.progress-bar-fill,.workout-progress{display:none !important;}
 }
+
+/* CHECK-IN FORM */
+.checkin-section{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;margin-bottom:20px;
+  scroll-margin-top:108px;
+}
+.checkin-form{display:flex;flex-direction:column;gap:14px;margin-top:20px;}
+.checkin-field{display:flex;flex-direction:column;gap:6px;}
+.checkin-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;}
+.checkin-input{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:13px 16px;font-size:15px;
+  color:var(--text);font-family:var(--font-body);outline:none;
+  transition:border-color 0.2s;width:100%;
+}
+.checkin-input:focus{border-color:var(--accent);}
+.checkin-textarea{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:13px 16px;font-size:14px;
+  color:var(--text);font-family:var(--font-body);outline:none;
+  transition:border-color 0.2s;width:100%;resize:none;min-height:90px;line-height:1.6;
+}
+.checkin-textarea:focus{border-color:var(--accent);}
+.checkin-submit{
+  background:var(--accent);color:#fff;
+  font-family:var(--font-display);font-size:15px;font-weight:800;
+  border:none;border-radius:99px;padding:16px;cursor:pointer;
+  transition:opacity 0.15s;margin-top:4px;
+}
+.checkin-submit:hover{opacity:0.88;}
+.checkin-submit:disabled{opacity:0.5;cursor:not-allowed;}
+.checkin-success{
+  background:rgba(37,211,102,0.1);border:1px solid var(--wa);
+  border-radius:10px;padding:16px;text-align:center;
+  font-size:14px;color:var(--wa);display:none;margin-top:8px;line-height:1.6;
+}
+.checkin-error{
+  background:var(--accent-dim);border:1px solid var(--accent);
+  border-radius:10px;padding:14px;text-align:center;
+  font-size:13px;color:var(--accent);display:none;margin-top:8px;
+}
+@media print{.checkin-section{display:none !important;}}
 </style>
 </head>
 <body>
@@ -368,6 +411,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
       <button class="nav-tab" data-target="sec-stop">🚫 Dejar</button>
       <button class="nav-tab" data-target="sec-rec">⭐ Recom.</button>
       <button class="nav-tab" data-target="sec-workout">🚴 Ejercicio</button>
+      <button class="nav-tab" data-target="sec-checkin">📊 Check-in</button>
       <button class="nav-tab" data-target="notes-section">📝 Notas</button>
     </div>
   </nav>
@@ -477,6 +521,50 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-si
     <div class="notes-body" id="notes-body"></div>
   </div>
 
+  <!-- CHECK-IN FORM -->
+  <div class="checkin-section" id="sec-checkin">
+    <div class="section-header">
+      <div class="section-icon">📊</div>
+      <div>
+        <div class="section-title">Check-in Semanal</div>
+        <div class="section-desc">Repórtate cada semana para que tu coach pueda seguir tu progreso</div>
+      </div>
+    </div>
+
+    <form class="checkin-form" id="checkin-form" novalidate>
+      <input type="hidden" name="cliente" id="checkin-codigo"/>
+      <input type="hidden" name="nombre" id="checkin-nombre"/>
+
+      <div class="checkin-field">
+        <label class="checkin-label" for="checkin-peso">⚖️ ¿Cuánto pesas hoy? (lbs)</label>
+        <input class="checkin-input" id="checkin-peso" name="peso" type="number"
+          placeholder="Ej. 268" min="50" max="600"/>
+      </div>
+
+      <div class="checkin-field">
+        <label class="checkin-label" for="checkin-rides">🚴 ¿Cuántos días pedaleaste esta semana?</label>
+        <input class="checkin-input" id="checkin-rides" name="dias_pedaleados" type="number"
+          placeholder="Ej. 3" min="0" max="7"/>
+      </div>
+
+      <div class="checkin-field">
+        <label class="checkin-label" for="checkin-feeling">💬 ¿Cómo te sientes en general?</label>
+        <textarea class="checkin-textarea" id="checkin-feeling" name="como_te_sientes"
+          placeholder="Cuéntame cómo te has sentido esta semana — energía, ánimo, lo que quieras compartir…"></textarea>
+      </div>
+
+      <button class="checkin-submit" type="submit" id="checkin-submit">Enviar check-in →</button>
+
+      <div class="checkin-success" id="checkin-success">
+        ✅ ¡Check-in recibido!<br/>
+        <span style="font-size:13px;color:var(--muted);">Tu coach revisará tu progreso pronto. ¡Sigue adelante!</span>
+      </div>
+      <div class="checkin-error" id="checkin-error">
+        Algo salió mal. Intenta de nuevo o contáctame por WhatsApp.
+      </div>
+    </form>
+  </div>
+
   <!-- CONTACT CTA -->
   <a class="contact-btn" href="https://wa.me/18508128342" target="_blank" rel="noopener">💬 Contáctame</a>
 
@@ -552,6 +640,7 @@ function renderProfile(data) {
 
   setupChecklist();
   renderWorkout(data.workout);
+  setupCheckin(data);
   setupNav(hasNotes);
 
   window.scrollTo({top: 0, behavior: 'smooth'});
@@ -811,6 +900,60 @@ function renderWorkout(w) {
     document.getElementById('workout-why-box').style.display = 'block';
     document.getElementById('workout-why-text').textContent = w.whyItWorks;
   }
+}
+
+/* ── WEEKLY CHECK-IN FORM ── */
+function setupCheckin(data) {
+  const form = document.getElementById('checkin-form');
+  if (!form) return;
+
+  // Pre-fill hidden fields with client info
+  const codigoEl = document.getElementById('checkin-codigo');
+  const nombreEl = document.getElementById('checkin-nombre');
+  if (codigoEl) codigoEl.value = data.code || planCode;
+  if (nombreEl) nombreEl.value = data.name || '';
+
+  if (form.dataset.checkinBound) return;
+  form.dataset.checkinBound = '1';
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('checkin-submit');
+    const successEl = document.getElementById('checkin-success');
+    const errorEl = document.getElementById('checkin-error');
+    successEl.style.display = 'none';
+    errorEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch('https://formspree.io/f/xpqgjanp', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        successEl.style.display = 'block';
+        form.reset();
+        // Re-fill hidden fields after reset
+        if (codigoEl) codigoEl.value = data.code || planCode;
+        if (nombreEl) nombreEl.value = data.name || '';
+        btn.textContent = '✅ Enviado';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = 'Enviar check-in →';
+        }, 3000);
+      } else {
+        throw new Error('server error');
+      }
+    } catch (err) {
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Enviar check-in →';
+    }
+  });
 }
 
 // On load: wire buttons + check URL param
